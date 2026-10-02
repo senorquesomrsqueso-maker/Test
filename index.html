@@ -1,82 +1,247 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blood Strike LATAM - Revelación de Creador</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Orbitron', sans-serif; }
-        body { background-color: #050508; color: #fff; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: space-between; overflow-x: hidden; padding: 20px; }
-        .header { text-align: center; margin-top: 10px; }
-        .header h3 { font-size: 0.8rem; color: #ff0055; letter-spacing: 3px; margin-bottom: 5px; text-shadow: 0 0 10px rgba(255,0,85,0.5); }
-        .header h1 { font-size: 1.5rem; letter-spacing: 2px; color: #fff; text-shadow: 0 0 15px rgba(0,243,255,0.4); }
-        
-        .timer-container { background: rgba(15, 15, 25, 0.9); border: 1px solid #ff0055; padding: 8px 20px; border-radius: 8px; margin: 10px 0; font-size: 0.9rem; letter-spacing: 2px; color: #ff0055; box-shadow: 0 0 10px rgba(255,0,85,0.2); }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Blood Strike LATAM - Revelación de Creador</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Plus+Jakarta+Sans:wght@500;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
-        .main-container { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; max-width: 400px; flex: 1; margin: 20px 0; }
-        
-        .card-container { width: 260px; height: 380px; perspective: 1000px; margin-bottom: 20px; }
-        .card { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 0.8s cubic-bezier(0.4, 0.2, 0.2, 1); }
-        .card.flipped { transform: rotateY(180deg); }
-        .card-face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 16px; overflow: hidden; border: 2px solid rgba(0, 243, 255, 0.3); box-shadow: 0 0 25px rgba(0, 243, 255, 0.15); background: #0b0b14; }
-        .card-face img { width: 100%; height: 100%; object-fit: cover; }
-        .card-back { transform: rotateY(180deg); border-color: #ff0055; box-shadow: 0 0 25px rgba(255, 0, 85, 0.2); }
+  <style>
+    :root {
+      --bg-main: #030307;
+      --card-bg: #0d111a;
+      --accent-cyan: #00f0ff;
+      --accent-pink: #ff0055;
+      --accent-red: #ff3344;
+      --radius-ui: 16px;
+    }
 
-        .voting-panel { width: 100%; background: rgba(15, 15, 25, 0.95); border: 1px solid rgba(0, 243, 255, 0.3); border-radius: 12px; padding: 15px; text-align: center; box-shadow: 0 0 20px rgba(0,0,0,0.8); }
-        .meta-info { display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 8px; color: #8a8ab0; letter-spacing: 1px; }
-        .meta-info span:last-child { color: #00f3ff; font-weight: bold; }
-        
-        .progress-bar-bg { width: 100%; height: 10px; background: #1a1a2e; border-radius: 5px; overflow: hidden; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.05); }
-        .progress-bar-fill { width: 0%; height: 100%; background: linear-gradient(90deg, #ff0055, #00f3ff); transition: width 0.5s ease; box-shadow: 0 0 10px #00f3ff; }
+    * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-tap-highlight-color: transparent; }
 
-        .vote-btn { width: 100%; background: linear-gradient(135deg, #ff0055, #990033); color: white; border: none; padding: 14px; border-radius: 8px; font-size: 1rem; font-weight: 900; letter-spacing: 2px; cursor: pointer; text-transform: uppercase; transition: all 0.2s ease; box-shadow: 0 0 15px rgba(255,0,85,0.4); }
-        .vote-btn:active { transform: scale(0.98); }
-        .vote-btn:disabled { background: #333; color: #666; cursor: not-allowed; box-shadow: none; border: 1px solid #444; }
+    body {
+      background-color: var(--bg-main);
+      color: #ffffff;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px;
+      overflow: hidden;
+      position: relative;
+      background-image: radial-gradient(circle at center, #111126 0%, #030307 100%);
+    }
 
-        .status-msg { font-size: 0.75rem; color: #ff3366; margin-top: 10px; min-height: 15px; letter-spacing: 1px; }
-    </style>
+    .bg-grid {
+      position: absolute;
+      inset: 0;
+      background-image: 
+        linear-gradient(to right, rgba(255,255,255,0.02) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255,255,255,0.02) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .flash-overlay {
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(circle, rgba(0,240,255,0.4) 0%, transparent 70%);
+      opacity: 0;
+      pointer-events: none;
+      z-index: 50;
+      transition: opacity 0.5s ease;
+    }
+    .flash-overlay.active { opacity: 1; }
+
+    .app-container {
+      width: 100%;
+      max-width: 440px;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 10;
+      margin: 0 auto;
+    }
+
+    .header-ui { text-align: center; transition: opacity 0.4s ease, transform 0.4s ease; width: 100%; margin-top: 5px; }
+    .tag { font-family: 'Orbitron', sans-serif; font-size: 0.75rem; font-weight: 700; letter-spacing: 3px; color: var(--accent-cyan); text-transform: uppercase; opacity: 0.9; display: block; margin-bottom: 6px; text-shadow: 0 0 10px rgba(0,240,255,0.4); }
+    .timer { font-family: 'Orbitron', sans-serif; font-size: clamp(1.6rem, 4.5vw, 2.1rem); font-weight: 900; letter-spacing: 2px; color: #ffffff; background: rgba(13, 17, 26, 0.85); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); padding: 8px 20px; border-radius: var(--radius-ui); display: inline-block; box-shadow: 0 8px 25px rgba(0,0,0,0.5); }
+
+    .status-banner {
+      position: absolute;
+      top: 4%;
+      left: 0;
+      width: 100%;
+      text-align: center;
+      opacity: 0;
+      transform: translateY(-20px) scale(0.95);
+      transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+      pointer-events: none;
+      z-index: 30;
+      padding: 0 15px;
+    }
+    .status-banner.show { opacity: 1; transform: translateY(0) scale(1); }
+    .banner-badge { font-family: 'Orbitron', sans-serif; font-size: 0.75rem; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 4px; display: block; }
+    .banner-title { font-family: 'Orbitron', sans-serif; font-size: clamp(1.3rem, 3.8vw, 1.7rem); font-weight: 900; color: #ffffff; text-transform: uppercase; }
+
+    .success-mode .banner-badge { background: linear-gradient(90deg, var(--accent-cyan), var(--accent-pink)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .success-mode .banner-title { text-shadow: 0 0 25px rgba(0,240,255,0.6); }
+
+    .failed-mode .banner-badge { color: var(--accent-red); }
+    .failed-mode .banner-title { color: #ff4d4d; text-shadow: 0 0 25px rgba(255,51,68,0.5); }
+
+    .stage { perspective: 1200px; width: 100%; display: flex; justify-content: center; align-items: center; margin: 10px 0; }
+    .card-wrapper {
+      width: clamp(220px, 42vh, 260px);
+      aspect-ratio: 1 / 1.55;
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 1.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+      animation: floatSmooth 4s ease-in-out infinite;
+    }
+
+    @keyframes floatSmooth {
+      0%, 100% { transform: translateY(0px) rotateX(4deg) rotateY(-2deg); }
+      50% { transform: translateY(-10px) rotateX(-4deg) rotateY(2deg); }
+    }
+
+    .card-wrapper.flipped {
+      animation: floatFlipped 4s ease-in-out infinite 1.2s !important;
+      transform: scale(1.05) rotateY(180deg) !important;
+    }
+
+    @keyframes floatFlipped {
+      0%, 100% { transform: scale(1.05) rotateY(180deg) translateY(0px); }
+      50% { transform: scale(1.05) rotateY(184deg) translateY(-8px); }
+    }
+
+    .card-wrapper.failed-state { animation: none !important; transform: scale(0.95) rotateX(10deg); filter: grayscale(40%) brightness(0.7); transition: all 0.8s ease; }
+
+    .card-face {
+      position: absolute;
+      inset: 0;
+      backface-visibility: hidden;
+      border-radius: var(--radius-ui);
+      overflow: hidden;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8), 0 0 20px rgba(0, 240, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      background: var(--card-bg);
+    }
+    .card-face img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+    .card-back { transform: rotateY(0deg); }
+    .card-front { transform: rotateY(180deg); border-color: var(--accent-pink); box-shadow: inset 0 0 30px rgba(255,0,85,0.2); }
+
+    .vote-ui {
+      width: 100%;
+      background: rgba(13, 17, 26, 0.85);
+      backdrop-filter: blur(15px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: var(--radius-ui);
+      padding: 16px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      transition: opacity 0.4s ease, transform 0.4s ease;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+      margin-bottom: 5px;
+    }
+
+    .progress-info { display: flex; flex-direction: column; gap: 6px; }
+    .votes-display { display: flex; justify-content: space-between; align-items: center; font-family: 'Orbitron', sans-serif; font-size: 0.85rem; font-weight: 700; color: #94a3b8; }
+    .votes-highlight { font-size: 1.2rem; color: var(--accent-cyan); font-weight: 900; }
+    .progress-bar-bg { width: 100%; height: 6px; background: rgba(255, 255, 255, 0.08); border-radius: 10px; overflow: hidden; }
+    .progress-bar-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent-cyan), var(--accent-pink)); border-radius: 10px; transition: width 0.4s ease; }
+
+    .btn-vote {
+      width: 100%;
+      background: linear-gradient(135deg, var(--accent-pink) 0%, #b3003b 100%);
+      color: white;
+      border: none;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1rem;
+      font-weight: 900;
+      letter-spacing: 1.5px;
+      padding: 13px;
+      border-radius: 12px;
+      cursor: pointer;
+      text-transform: uppercase;
+      transition: all 0.2s ease;
+      box-shadow: 0 5px 20px rgba(255, 0, 85, 0.4);
+    }
+    .btn-vote:hover:not(:disabled) { filter: brightness(1.15); transform: translateY(-1px); }
+    .btn-vote:active:not(:disabled) { transform: scale(0.98); }
+    .btn-vote:disabled { background: #1a1a2e; color: #555577; cursor: not-allowed; box-shadow: none; border: 1px solid rgba(255,255,255,0.05); }
+
+    .fade-out { opacity: 0 !important; transform: translateY(15px) !important; pointer-events: none !important; }
+    .status-msg { font-size: 0.75rem; color: var(--accent-pink); text-align: center; min-height: 14px; font-weight: 700; letter-spacing: 1px; }
+  </style>
 </head>
 <body>
 
-    <div class="header">
-        <h3>BLOOD STRIKE LATAM</h3>
-        <h1>REVELACIÓN DE CREADOR</h1>
+  <div class="bg-grid"></div>
+  <div id="flashOverlay" class="flash-overlay"></div>
+
+  <!-- BANNER DE ÉXITO DINÁMICO -->
+  <div id="successBanner" class="status-banner success-mode">
+    <span class="banner-badge">● LEGADO DESBLOQUEADO ●</span>
+    <h1 class="banner-title" id="bannerCreatorName">CREADOR HA RESPONDIDO</h1>
+  </div>
+
+  <!-- BANNER DE FRACASO -->
+  <div id="failedBanner" class="status-banner failed-mode">
+    <span class="banner-badge">● TIEMPO AGOTADO ●</span>
+    <h1 class="banner-title">NO SE CUMPLIÓ CON LA META</h1>
+  </div>
+
+  <div class="app-container">
+    
+    <header id="headerUI" class="header-ui">
+      <span class="tag">BLOOD STRIKE LATAM</span>
+      <div id="timer" class="timer">TIEMPO: --:--:--</div>
+    </header>
+
+    <div class="stage">
+      <div id="cardWrapper" class="card-wrapper">
+        <div class="card-face card-back">
+          <img id="backImg" src="" alt="Dorso de Carta">
+        </div>
+        <div class="card-face card-front">
+          <img id="frontImg" src="" alt="Frente de Carta">
+        </div>
+      </div>
     </div>
 
-    <div class="timer-container" id="timerDisplay">TIEMPO RESTANTE: --:--:--</div>
-
-    <div class="main-container">
-        <div class="card-container">
-            <div class="card" id="creatorCard">
-                <div class="card-face card-front">
-                    <img id="frontImg" src="" alt="Frente de Carta">
-                </div>
-                <div class="card-face card-back">
-                    <img id="backImg" src="" alt="Dorso de Carta">
-                </div>
-            </div>
+    <div id="voteUI" class="vote-ui">
+      <div class="progress-info">
+        <div class="votes-display">
+          <span>META DE COMUNIDAD</span>
+          <span><strong id="currentVotes" class="votes-highlight">0</strong> / 500</span>
         </div>
-
-        <div class="voting-panel">
-            <div class="meta-info">
-                <span>META DE COMUNIDAD</span>
-                <span id="voteCountText">0 / 500</span>
-            </div>
-            <div class="progress-bar-bg">
-                <div class="progress-bar-fill" id="progressBar"></div>
-            </div>
-            <button class="vote-btn" id="voteBtn" onclick="handleVote()">VOTAR AHORA</button>
-            <div class="status-msg" id="statusMsg"></div>
+        <div class="progress-bar-bg">
+          <div id="progressBar" class="progress-bar-fill"></div>
         </div>
+      </div>
+      <button id="btnVote" class="btn-vote" onclick="handleVote()">VOTAR AHORA</button>
+      <div class="status-msg" id="statusMsg"></div>
     </div>
 
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+  </div>
 
-    <script>
-        const firebaseConfig = {
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
+  <script>
+    const firebaseConfig = {
   apiKey: "AIzaSyC-a1OGET1bsfBQdsFBomwvOaPgpmC-0bQ",
   authDomain: "gestor-creadores-rrss.firebaseapp.com",
   projectId: "gestor-creadores-rrss",
@@ -84,126 +249,158 @@
   messagingSenderId: "181748634176",
   appId: "1:181748634176:web:bd0bc887c0f976b43d05a5",
   measurementId: "G-9744QBXJKH"
-};
+    };
 
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-        const docRef = db.collection("creators").doc("current_config");
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    const docRef = db.collection("creators").doc("current_config");
 
-        let userId = localStorage.getItem("bs_voter_id");
-        if (!userId) {
-            userId = 'user_' + Math.random().toString(36).substring(2) + Date.now().toString(36);
-            localStorage.setItem("bs_voter_id", userId);
+    let userId = localStorage.getItem("bs_voter_id");
+    if (!userId) {
+      userId = 'user_' + Math.random().toString(36).substring(2) + Date.now().toString(36);
+      localStorage.setItem("bs_voter_id", userId);
+    }
+
+    let targetEndTime = 0;
+    let eventCompleted = false;
+    let eventExpired = false;
+    let animationTriggered = false;
+
+    function updateTimer() {
+      if (eventCompleted) {
+        document.getElementById('timer').innerText = "¡META CUMPLIDA!";
+        return;
+      }
+      if (!targetEndTime) return;
+
+      const now = new Date().getTime();
+      const distance = targetEndTime - now;
+
+      if (distance < 0) {
+        document.getElementById('timer').innerText = "00:00:00";
+        if (!eventCompleted && !eventExpired) {
+          triggerTimeOutState();
         }
+        return;
+      }
 
-        let targetEndTime = 0;
-        let eventActive = true;
+      const h = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const m = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+      const s = Math.floor((distance % (1000 * 60)) / 1000);
+      const fmt = (n) => String(n).padStart(2, '0');
 
-        // Cronómetro basado en el tiempo configurado en Firebase
-        function updateTimer() {
-            if (!targetEndTime) return;
-            const now = new Date().getTime();
-            const distance = targetEndTime - now;
+      document.getElementById('timer').innerText = `${fmt(h)}:${fmt(m)}:${fmt(s)}`;
+    }
+    setInterval(updateTimer, 1000);
 
-            if (distance < 0) {
-                document.getElementById("timerDisplay").innerText = "TIEMPO EXPIRADO";
-                document.getElementById("voteBtn").disabled = true;
-                document.getElementById("voteBtn").innerText = "EVENTO FINALIZADO";
-                eventActive = false;
-                return;
-            }
+    docRef.onSnapshot((doc) => {
+      if (doc.exists) {
+        const data = doc.data();
+        document.getElementById("frontImg").src = data.frontImg || "";
+        document.getElementById("backImg").src = data.backImg || "";
+        
+        // Se actualiza dinámicamente el nombre escrito en el admin
+        const creatorName = data.creatorName || "CREADOR";
+        document.getElementById("bannerCreatorName").innerText = `${creatorName} HA RESPONDIDO`;
 
-            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+        const votes = data.votes || 0;
+        eventCompleted = data.completed || (votes >= 500);
+        const voters = data.voters || [];
+        targetEndTime = data.endTime || (new Date().getTime() + 7200000);
 
-            document.getElementById("timerDisplay").innerText = 
-                `TIEMPO RESTANTE: ${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        document.getElementById("currentVotes").innerText = votes;
+        const progressPercent = Math.min((votes / 500) * 100, 100);
+        document.getElementById("progressBar").style.width = progressPercent + '%';
+
+        const btnVote = document.getElementById("btnVote");
+
+        if (eventCompleted) {
+          if (!animationTriggered) {
+            animationTriggered = true;
+            executeSuccessAnimations();
+          }
+          btnVote.disabled = true;
+          btnVote.innerText = "¡CARTA REVELADA!";
+        } else if (eventExpired) {
+          btnVote.disabled = true;
+          btnVote.innerText = "TIEMPO AGOTADO";
+        } else if (voters.includes(userId)) {
+          btnVote.disabled = true;
+          btnVote.innerText = "YA HAS VOTADO";
+          document.getElementById("statusMsg").innerText = "Tu apoyo ya fue registrado.";
+        } else {
+          btnVote.disabled = false;
+          btnVote.innerText = "VOTAR AHORA";
+          document.getElementById("statusMsg").innerText = "";
         }
-        setInterval(updateTimer, 1000);
+      }
+    });
 
-        docRef.onSnapshot((doc) => {
-            if (doc.exists) {
-                const data = doc.data();
-                document.getElementById("frontImg").src = data.frontImg || "";
-                document.getElementById("backImg").src = data.backImg || "";
-                
-                const votes = data.votes || 0;
-                const completed = data.completed || false;
-                const voters = data.voters || [];
-                targetEndTime = data.endTime || (new Date().getTime() + 300000);
+    async function handleVote() {
+      if (eventCompleted || eventExpired) return;
+      const btnVote = document.getElementById("btnVote");
+      btnVote.disabled = true;
+      btnVote.innerText = "REGISTRANDO...";
 
-                document.getElementById("voteCountText").innerText = `${votes} / 500`;
-                const percentage = Math.min((votes / 500) * 100, 100);
-                document.getElementById("progressBar").style.width = `${percentage}%`;
+      try {
+        await db.runTransaction(async (transaction) => {
+          const sfDoc = await transaction.get(docRef);
+          if (!sfDoc.exists) throw "Configuración no disponible.";
 
-                const card = document.getElementById("creatorCard");
-                const voteBtn = document.getElementById("voteBtn");
+          const data = sfDoc.data();
+          let voters = data.voters || [];
+          let votes = data.votes || 0;
 
-                if (completed || votes >= 500) {
-                    if (!card.classList.contains("flipped")) {
-                        card.classList.add("flipped");
-                        triggerConfetti();
-                    }
-                    voteBtn.disabled = true;
-                    voteBtn.innerText = "¡META ALCANZADA!";
-                    document.getElementById("statusMsg").innerText = "¡La carta ha sido revelada con éxito!";
-                } else if (voters.includes(userId)) {
-                    voteBtn.disabled = true;
-                    voteBtn.innerText = "YA HAS VOTADO";
-                    document.getElementById("statusMsg").innerText = "Tu apoyo ya fue registrado.";
-                } else {
-                    voteBtn.disabled = false;
-                    voteBtn.innerText = "VOTAR AHORA";
-                }
-            } else {
-                document.getElementById("statusMsg").innerText = "CARGANDO... (Configura desde Admin)";
-            }
+          if (voters.includes(userId)) {
+            throw "Ya has registrado tu voto anteriormente.";
+          }
+
+          voters.push(userId);
+          votes += 1;
+          const completed = votes >= 500;
+
+          transaction.update(docRef, { votes: votes, voters: voters, completed: completed });
         });
 
-        async function handleVote() {
-            if (!eventActive) return;
-            const voteBtn = document.getElementById("voteBtn");
-            voteBtn.disabled = true;
-            voteBtn.innerText = "REGISTRANDO...";
+        document.getElementById("statusMsg").innerText = "¡Voto emitido con éxito!";
+      } catch (error) {
+        console.error(error);
+        alert("Aviso: " + (error.message || error));
+        btnVote.disabled = false;
+        btnVote.innerText = "VOTAR AHORA";
+      }
+    }
 
-            try {
-                await db.runTransaction(async (transaction) => {
-                    const sfDoc = await transaction.get(docRef);
-                    if (!sfDoc.exists) throw "El documento no existe.";
+    function executeSuccessAnimations() {
+      document.getElementById('headerUI').classList.add('fade-out');
+      document.getElementById('voteUI').classList.add('fade-out');
 
-                    const data = sfDoc.data();
-                    let voters = data.voters || [];
-                    let votes = data.votes || 0;
+      const flash = document.getElementById('flashOverlay');
+      flash.classList.add('active');
+      setTimeout(() => flash.classList.remove('active'), 500);
 
-                    if (voters.includes(userId)) {
-                        throw "Ya has registrado tu voto anteriormente.";
-                    }
+      // Confeti integrado vía librería CDN
+      confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 }, zIndex: 1000 });
 
-                    voters.push(userId);
-                    votes += 1;
-                    const completed = votes >= 500;
+      setTimeout(() => {
+        document.getElementById('cardWrapper').classList.add('flipped');
+      }, 250);
 
-                    transaction.update(docRef, { votes: votes, voters: voters, completed: completed });
-                });
+      setTimeout(() => {
+        document.getElementById('successBanner').classList.add('show');
+      }, 600);
+    }
 
-                document.getElementById("statusMsg").innerText = "¡Voto registrado con éxito!";
-                triggerConfetti();
-            } catch (error) {
-                console.error(error);
-                alert("Error: " + (error.message || error));
-                voteBtn.disabled = false;
-                voteBtn.innerText = "VOTAR AHORA";
-            }
-        }
+    function triggerTimeOutState() {
+      eventExpired = true;
+      document.getElementById('headerUI').classList.add('fade-out');
+      document.getElementById('voteUI').classList.add('fade-out');
+      document.getElementById('cardWrapper').classList.add('failed-state');
 
-        function triggerConfetti() {
-            confetti({
-                particleCount: 150,
-                spread: 90,
-                origin: { y: 0.6 }
-            });
-        }
-    </script>
+      setTimeout(() => {
+        document.getElementById('failedBanner').classList.add('show');
+      }, 400);
+    }
+  </script>
 </body>
 </html>
