@@ -1,211 +1,431 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Test de Animación - GitHub Pages</title>
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blood Strike LATAM - Revelación de Legado</title>
+  
+  <!-- Fuentes Gamer de Alta Calidad -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800;900&family=Rajdhani:wght@600;700;800&display=swap" rel="stylesheet">
 
-        body {
-            background-color: #0b0c10;
-            color: #c5c6c7;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            position: relative;
-        }
+  <style>
+    :root {
+      --primary-cyan: #00f2ff;
+      --accent-pink: #ff0055;
+      --gold-glow: #ffcc00;
+      --bg-dark: #050811;
+      --card-width: 290px;
+      --card-height: 450px;
+    }
 
-        canvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 1;
-            pointer-events: none;
-        }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
 
-        .container {
-            position: relative;
-            z-index: 2;
-            text-align: center;
-            padding: 20px;
-            background: rgba(31, 40, 51, 0.7);
-            backdrop-filter: blur(8px);
-            border-radius: 16px;
-            border: 1px solid rgba(102, 252, 241, 0.2);
-            max-width: 500px;
-            width: 90%;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
-        }
+    body {
+      background: radial-gradient(circle at center, #0d1527 0%, var(--bg-dark) 100%);
+      color: #fff;
+      font-family: 'Rajdhani', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      padding: 25px 15px;
+      overflow-x: hidden;
+      position: relative;
+    }
 
-        h1 {
-            color: #66fcf1;
-            font-size: 1.8rem;
-            margin-bottom: 12px;
-        }
+    /* Fondo dinámico con aura neón */
+    body::before {
+      content: '';
+      position: absolute;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(0, 242, 255, 0.15) 0%, rgba(255, 0, 85, 0.08) 50%, transparent 70%);
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      z-index: 1;
+    }
 
-        p {
-            font-size: 1rem;
-            line-height: 1.5;
-            color: #c5c6c7;
-            margin-bottom: 20px;
-        }
+    /* Canvas para partículas del fondo */
+    #particles-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      pointer-events: none;
+    }
 
-        .img-preview {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 3px solid #45a29e;
-            margin: 0 auto 15px;
-            display: block;
-            background: #1f2833;
-        }
+    /* --- MENSAJE DE META CUMPLIDA (SUPERIOR) --- */
+    .meta-message {
+      position: fixed;
+      top: 10%;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 2.2rem;
+      font-weight: 900;
+      color: #fff;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      text-shadow: 0 0 20px var(--primary-cyan), 0 0 40px var(--accent-pink);
+      opacity: 0;
+      transform: translateY(-30px) scale(0.8);
+      transition: all 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      pointer-events: none;
+      z-index: 30;
+      text-align: center;
+      width: 100%;
+    }
 
-        /* Botón chiquito flotante de prueba */
-        .btn-test-anim {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            z-index: 10;
-            background: rgba(102, 252, 241, 0.15);
-            color: #66fcf1;
-            border: 1px solid #66fcf1;
-            padding: 8px 14px;
-            font-size: 0.85rem;
-            border-radius: 20px;
-            cursor: pointer;
-            backdrop-filter: blur(5px);
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
+    .meta-message.active {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
 
-        .btn-test-anim:hover {
-            background: #66fcf1;
-            color: #0b0c10;
-            transform: translateY(-2px) scale(1.05);
-            box-shadow: 0 6px 16px rgba(102, 252, 241, 0.4);
-        }
+    /* --- ENCABEZADO CON CRONÓMETRO --- */
+    .header-container {
+      text-align: center;
+      z-index: 10;
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
 
-        .btn-test-anim:active {
-            transform: translateY(0) scale(0.98);
-        }
-    </style>
+    .subtitle {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 800;
+      letter-spacing: 4px;
+      color: var(--primary-cyan);
+      text-transform: uppercase;
+      margin-bottom: 10px;
+      text-shadow: 0 0 10px rgba(0, 242, 255, 0.5);
+    }
+
+    .countdown-box {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 2.8rem;
+      font-weight: 900;
+      letter-spacing: 5px;
+      color: #ffffff;
+      background: rgba(10, 16, 30, 0.65);
+      backdrop-filter: blur(12px);
+      padding: 12px 30px;
+      border-radius: 16px;
+      border: 1px solid rgba(0, 242, 255, 0.3);
+      box-shadow: 0 0 30px rgba(0, 242, 255, 0.2), inset 0 0 15px rgba(0, 242, 255, 0.1);
+      display: inline-block;
+    }
+
+    /* --- MESA Y CARTA 3D --- */
+    .stage {
+      perspective: 1200px;
+      margin: 15px 0;
+      z-index: 10;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .card-container {
+      width: var(--card-width);
+      height: var(--card-height);
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 1.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+      animation: floatAnimation 4.5s ease-in-out infinite;
+      cursor: pointer;
+    }
+
+    /* Efecto de flotado constante */
+    @keyframes floatAnimation {
+      0%, 100% {
+        transform: translateY(0px) rotateX(8deg) rotateY(-4deg);
+      }
+      50% {
+        transform: translateY(-16px) rotateX(-6deg) rotateY(4deg);
+      }
+    }
+
+    /* Animación de giro al revelar */
+    .card-container.revealed {
+      animation: floatRevealed 4.5s ease-in-out infinite 1.6s !important;
+      transform: scale(1.12) rotateY(180deg) !important;
+    }
+
+    @keyframes floatRevealed {
+      0%, 100% {
+        transform: scale(1.12) rotateY(180deg) translateY(0px) rotateX(-4deg);
+      }
+      50% {
+        transform: scale(1.12) rotateY(184deg) translateY(-16px) rotateX(4deg);
+      }
+    }
+
+    .card-face {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 20px 45px rgba(0, 0, 0, 0.8), 0 0 35px rgba(0, 242, 255, 0.25);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      transition: box-shadow 0.5s ease;
+    }
+
+    .card-face img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    /* Reverso */
+    .card-back {
+      transform: rotateY(0deg);
+    }
+
+    /* Frente (Jhoda) con resplandor dorado y neón */
+    .card-front {
+      transform: rotateY(180deg);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9), 0 0 45px rgba(255, 0, 85, 0.5), 0 0 15px rgba(255, 204, 0, 0.4);
+    }
+
+    /* --- SECCIÓN DE VOTACIÓN --- */
+    .vote-section {
+      text-align: center;
+      z-index: 10;
+      transition: opacity 0.8s ease, transform 0.8s ease;
+      background: rgba(10, 16, 30, 0.5);
+      backdrop-filter: blur(10px);
+      padding: 18px 35px;
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    }
+
+    .vote-count {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.6rem;
+      font-weight: 800;
+      letter-spacing: 3px;
+      margin-bottom: 12px;
+      color: #e0e6ed;
+    }
+
+    .vote-count span {
+      color: var(--primary-cyan);
+      text-shadow: 0 0 12px rgba(0, 242, 255, 0.6);
+    }
+
+    .btn-vote {
+      background: linear-gradient(135deg, var(--accent-pink) 0%, #ff5500 100%);
+      color: #fff;
+      border: none;
+      font-family: 'Orbitron', sans-serif;
+      padding: 14px 45px;
+      font-size: 1.25rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      border-radius: 50px;
+      cursor: pointer;
+      box-shadow: 0 0 25px rgba(255, 0, 85, 0.5);
+      transition: all 0.3s ease;
+    }
+
+    .btn-vote:hover {
+      transform: translateY(-3px) scale(1.05);
+      box-shadow: 0 0 35px rgba(255, 0, 85, 0.8);
+    }
+
+    .btn-vote:active {
+      transform: translateY(1px) scale(0.97);
+    }
+
+    /* Botón flotante chiquito de pruebas en la esquina inferior */
+    .btn-test {
+      position: fixed;
+      bottom: 15px;
+      right: 15px;
+      z-index: 100;
+      background: rgba(0, 242, 255, 0.1);
+      border: 1px solid rgba(0, 242, 255, 0.4);
+      color: var(--primary-cyan);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 700;
+      cursor: pointer;
+      backdrop-filter: blur(5px);
+      transition: all 0.3s ease;
+    }
+
+    .btn-test:hover {
+      background: var(--primary-cyan);
+      color: var(--bg-dark);
+      box-shadow: 0 0 15px rgba(0, 242, 255, 0.6);
+    }
+
+    /* Ocultar elementos al cumplir la meta */
+    .fade-out {
+      opacity: 0 !important;
+      pointer-events: none !important;
+      transform: translateY(25px);
+    }
+  </style>
 </head>
 <body>
 
-    <canvas id="animCanvas"></canvas>
+  <canvas id="particles-canvas"></canvas>
 
-    <div class="container">
-        <!-- Ejemplo de uso de imagen subida a la carpeta 'assets' de GitHub -->
-        <img src="assets/imagen-ejemplo.jpg" alt="Imagen de Prueba" class="img-preview" onerror="this.src='https://via.placeholder.com/120/1f2833/66fcf1?text=Tu+Imagen';">
-        <h1>Vista Previa de Prueba</h1>
-        <p>Asegúrate de subir tus imágenes a la carpeta <code>assets/</code> o <code>images/</code> en tu repositorio de GitHub.</p>
+  <!-- MENSAJE DE CELEBRACIÓN -->
+  <div id="meta-message" class="meta-message">¡META CUMPLIDA!</div>
+
+  <!-- ENCABEZADO CON CRONÓMETRO -->
+  <div id="header-ui" class="header-container">
+    <div class="subtitle">BLOOD STRIKE LATAM • REVELACIÓN DE LEGADO</div>
+    <div id="timer" class="countdown-box">05:00:00</div>
+  </div>
+
+  <!-- ZONA DE LA CARTA 3D -->
+  <div class="stage">
+    <div id="card" class="card-container">
+      <!-- Reverso (Carta azul) -->
+      <div class="card-face card-back">
+        <img src="1000013129.png" alt="Carta Bloqueada">
+      </div>
+      <!-- Frente (Jhoda) -->
+      <div class="card-face card-front">
+        <img src="1000013137.png" alt="Jhoda Revelado">
+      </div>
     </div>
+  </div>
 
-    <!-- Botón chiquito para probar la animación -->
-    <button id="btnTestAnim" class="btn-test-anim">
-        <span>✨</span>
-        <span>Probar Animación</span>
-    </button>
+  <!-- PANEL DE VOTACIÓN -->
+  <div id="vote-ui" class="vote-section">
+    <div class="vote-count">
+      <span id="current-votes">0</span> / 500 VOTOS
+    </div>
+    <button id="btn-vote" class="btn-vote" onclick="addVote(1)">VOTAR AHORA</button>
+  </div>
 
-    <script>
-        const canvas = document.getElementById('animCanvas');
-        const ctx = canvas.getContext('2d');
+  <!-- BOTÓN CHIQUITO DE PRUEBAS -->
+  <button class="btn-test" onclick="addVote(100)">⚡ Test (+100)</button>
 
-        function resizeCanvas() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        }
-        window.addEventListener('resize', resizeCanvas);
-        resizeCanvas();
+  <script>
+    let votes = 0;
+    const targetVotes = 500;
+    let isRevealed = false;
 
-        let particles = [];
+    // --- 1. LÓGICA DE VOTACIÓN ---
+    function addVote(count) {
+      if (isRevealed) return;
 
-        class Particle {
-            constructor(x, y, isBurst = false) {
-                this.x = x || Math.random() * canvas.width;
-                this.y = y || Math.random() * canvas.height;
-                this.size = Math.random() * (isBurst ? 4 : 2) + 1;
-                this.speedX = isBurst ? (Math.random() - 0.5) * 8 : (Math.random() - 0.5) * 1.5;
-                this.speedY = isBurst ? (Math.random() - 0.5) * 8 : (Math.random() - 0.5) * 1.5;
-                this.color = isBurst ? `hsl(${Math.random() * 60 + 160}, 100%, 70%)` : '#66fcf1';
-                this.alpha = 1;
-                this.decay = isBurst ? Math.random() * 0.02 + 0.015 : 0;
-            }
+      votes += count;
+      if (votes > targetVotes) votes = targetVotes;
 
-            update() {
-                this.x += this.speedX;
-                this.y += this.speedY;
-                if (this.decay > 0) {
-                    this.alpha -= this.decay;
-                } else {
-                    if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
-                    if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
-                }
-            }
+      document.getElementById('current-votes').innerText = votes;
 
-            draw() {
-                ctx.save();
-                ctx.globalAlpha = Math.max(0, this.alpha);
-                ctx.fillStyle = this.color;
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fill();
-                ctx.restore();
-            }
-        }
+      if (votes >= targetVotes) {
+        triggerReveal();
+      }
+    }
 
-        // Crear partículas iniciales de fondo
-        function initParticles() {
-            particles = [];
-            for (let i = 0; i < 60; i++) {
-                particles.push(new Particle());
-            }
-        }
-        initParticles();
+    // --- 2. ANIMACIÓN DE REVELACIÓN ÉPICA ---
+    function triggerReveal() {
+      isRevealed = true;
 
-        // Función para detonar ráfaga de prueba
-        function triggerAnimation() {
-            const centerX = window.innerWidth / 2;
-            const centerY = window.innerHeight / 2;
-            for (let i = 0; i < 80; i++) {
-                particles.push(new Particle(centerX, centerY, true));
-            }
-        }
+      // Ocultar suavemente el título, reloj y el botón de votar
+      document.getElementById('header-ui').classList.add('fade-out');
+      document.getElementById('vote-ui').classList.add('fade-out');
 
-        // Evento del botón chiquito de prueba
-        document.getElementById('btnTestAnim').addEventListener('click', () => {
-            triggerAnimation();
-        });
+      // Mostrar el texto gigante "¡META CUMPLIDA!"
+      setTimeout(() => {
+        document.getElementById('meta-message').classList.add('active');
+      }, 400);
 
-        // Bucle de animación
-        function animate() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            particles.forEach((p, index) => {
-                p.update();
-                p.draw();
-                if (p.alpha <= 0) {
-                    particles.splice(index, 1);
-                }
-            });
-            requestAnimationFrame(animate);
-        }
-        animate();
-    </script>
+      // Girar la carta en 180 grados con física 3D
+      setTimeout(() => {
+        const card = document.getElementById('card');
+        card.classList.add('revealed');
+      }, 1000);
+    }
+
+    // --- 3. CONTADOR DE SUSPENSO DE 5 HORAS ---
+    let totalSeconds = 5 * 3600;
+
+    function updateTimer() {
+      const hours = Math.floor(totalSeconds / 3600);
+      const minutes = Math.floor((totalSeconds % 3600) / 60);
+      const seconds = totalSeconds % 60;
+
+      const format = (num) => String(num).padStart(2, '0');
+
+      document.getElementById('timer').innerText = 
+        `${format(hours)}:${format(minutes)}:${format(seconds)}`;
+
+      if (totalSeconds > 0) {
+        totalSeconds--;
+      }
+    }
+
+    setInterval(updateTimer, 1000);
+    updateTimer();
+
+    // --- 4. EFECTO DE PARTÍCULAS EN EL FONDO (CANVAS) ---
+    const canvas = document.getElementById('particles-canvas');
+    const ctx = canvas.getContext('2d');
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    const particles = [];
+    for (let i = 0; i < 45; i++) {
+      particles.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        radius: Math.random() * 2 + 0.5,
+        color: Math.random() > 0.5 ? '#00f2ff' : '#ff0055',
+        speedX: (Math.random() - 0.5) * 0.6,
+        speedY: (Math.random() - 0.5) * 0.6,
+        alpha: Math.random() * 0.6 + 0.2
+      });
+    }
+
+    function animateParticles() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particles.forEach(p => {
+        p.x += p.speedX;
+        p.y += p.speedY;
+
+        if (p.x < 0 || p.x > canvas.width) p.speedX *= -1;
+        if (p.y < 0 || p.y > canvas.height) p.speedY *= -1;
+
+        ctx.save();
+        ctx.globalAlpha = p.alpha;
+        ctx.fillStyle = p.color;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      });
+      requestAnimationFrame(animateParticles);
+    }
+    animateParticles();
+  </script>
 </body>
 </html>
-
