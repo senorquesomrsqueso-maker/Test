@@ -16,7 +16,7 @@
       --accent-cyan: #00f0ff;
       --accent-pink: #ff0055;
       --accent-red: #ff3344;
-      --radius-ui: 14px;
+      --radius-ui: 16px;
     }
 
     * {
@@ -32,11 +32,12 @@
       color: #ffffff;
       font-family: 'Plus Jakarta Sans', sans-serif;
       min-height: 100vh;
+      min-height: 100dvh;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: space-between;
-      padding: 20px 16px;
+      padding: 20px;
       overflow: hidden;
       position: relative;
     }
@@ -47,7 +48,7 @@
       background-image: 
         linear-gradient(to right, rgba(255,255,255,0.02) 1px, transparent 1px),
         linear-gradient(to bottom, rgba(255,255,255,0.02) 1px, transparent 1px);
-      background-size: 30px 30px;
+      background-size: 40px 40px;
       pointer-events: none;
       z-index: 0;
     }
@@ -74,21 +75,22 @@
 
     .app-container {
       width: 100%;
-      max-width: 420px;
-      height: 100vh;
+      max-width: 440px;
+      height: 100%;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
       align-items: center;
       z-index: 10;
-      padding: 10px 0;
+      margin: 0 auto;
     }
 
-    /* ENCABEZADO */
+    /* ENCABEZADO MULTIPLATAFORMA */
     .header-ui {
       text-align: center;
-      transition: opacity 0.5s ease, transform 0.5s ease;
+      transition: opacity 0.4s ease, transform 0.4s ease;
       width: 100%;
+      margin-top: 5px;
     }
 
     .tag {
@@ -105,29 +107,29 @@
 
     .timer {
       font-family: 'Orbitron', sans-serif;
-      font-size: clamp(1.8rem, 6vw, 2.4rem);
+      font-size: clamp(1.8rem, 5vw, 2.3rem);
       font-weight: 900;
       letter-spacing: 3px;
       color: #ffffff;
-      background: rgba(13, 17, 26, 0.7);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      padding: 8px 20px;
+      background: rgba(13, 17, 26, 0.8);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 8px 24px;
       border-radius: var(--radius-ui);
       display: inline-block;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.5);
     }
 
-    /* BANNERS DE ESTADO (SUPERIOR) */
+    /* BANNERS DE ESTADO PROFESIONALES */
     .status-banner {
       position: absolute;
-      top: 5%;
+      top: 4%;
       left: 0;
       width: 100%;
       text-align: center;
       opacity: 0;
       transform: translateY(-20px) scale(0.95);
-      transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+      transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
       pointer-events: none;
       z-index: 30;
       padding: 0 15px;
@@ -140,7 +142,7 @@
 
     .banner-badge {
       font-family: 'Orbitron', sans-serif;
-      font-size: 0.7rem;
+      font-size: 0.75rem;
       font-weight: 900;
       letter-spacing: 2px;
       text-transform: uppercase;
@@ -150,36 +152,34 @@
 
     .banner-title {
       font-family: 'Orbitron', sans-serif;
-      font-size: clamp(1.3rem, 4.5vw, 1.8rem);
+      font-size: clamp(1.4rem, 4vw, 1.8rem);
       font-weight: 900;
       color: #ffffff;
       text-transform: uppercase;
-      letter-spacing: 1px;
     }
 
-    /* Estilos específicos para éxito y fracaso */
     .success-mode .banner-badge {
       background: linear-gradient(90deg, var(--accent-cyan), var(--accent-pink));
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
-    .success-mode .banner-title { text-shadow: 0 0 20px rgba(0,240,255,0.5); }
+    .success-mode .banner-title { text-shadow: 0 0 25px rgba(0,240,255,0.6); }
 
     .failed-mode .banner-badge { color: var(--accent-red); }
-    .failed-mode .banner-title { color: #ff4d4d; text-shadow: 0 0 20px rgba(255,51,68,0.4); }
+    .failed-mode .banner-title { color: #ff4d4d; text-shadow: 0 0 25px rgba(255,51,68,0.5); }
 
-    /* CARTA 3D */
+    /* CARTA 3D ADAPTADA A PC Y MÓVIL */
     .stage {
-      perspective: 1000px;
+      perspective: 1200px;
       width: 100%;
       display: flex;
       justify-content: center;
       align-items: center;
-      margin: auto 0;
+      margin: 10px 0;
     }
 
     .card-wrapper {
-      width: clamp(230px, 62vw, 280px);
+      width: clamp(220px, 45vh, 270px);
       aspect-ratio: 1 / 1.55;
       position: relative;
       transform-style: preserve-3d;
@@ -189,20 +189,19 @@
 
     @keyframes floatSmooth {
       0%, 100% { transform: translateY(0px) rotateX(4deg) rotateY(-2deg); }
-      50% { transform: translateY(-12px) rotateX(-4deg) rotateY(2deg); }
+      50% { transform: translateY(-10px) rotateX(-4deg) rotateY(2deg); }
     }
 
     .card-wrapper.flipped {
       animation: floatFlipped 4s ease-in-out infinite 1.2s !important;
-      transform: scale(1.08) rotateY(180deg) !important;
+      transform: scale(1.05) rotateY(180deg) !important;
     }
 
     @keyframes floatFlipped {
-      0%, 100% { transform: scale(1.08) rotateY(180deg) translateY(0px); }
-      50% { transform: scale(1.08) rotateY(184deg) translateY(-10px); }
+      0%, 100% { transform: scale(1.05) rotateY(180deg) translateY(0px); }
+      50% { transform: scale(1.05) rotateY(184deg) translateY(-8px); }
     }
 
-    /* Estado bloqueado si no se cumple la meta */
     .card-wrapper.failed-state {
       animation: none !important;
       transform: scale(0.95) rotateX(10deg);
@@ -214,10 +213,10 @@
       position: absolute;
       inset: 0;
       backface-visibility: hidden;
-      border-radius: 16px;
+      border-radius: var(--radius-ui);
       overflow: hidden;
-      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.7), 0 0 20px rgba(0, 240, 255, 0.15);
-      border: 1px solid rgba(255, 255, 255, 0.12);
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8), 0 0 20px rgba(0, 240, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.15);
       background: var(--card-bg);
     }
 
@@ -231,19 +230,20 @@
     .card-back { transform: rotateY(0deg); }
     .card-front { transform: rotateY(180deg); }
 
-    /* PANEL DE VOTACIÓN */
+    /* PANEL DE VOTACIÓN PROFESIONAL */
     .vote-ui {
       width: 100%;
-      background: rgba(13, 17, 26, 0.6);
-      backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 20px;
-      padding: 18px 20px;
+      background: rgba(13, 17, 26, 0.75);
+      backdrop-filter: blur(15px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: var(--radius-ui);
+      padding: 16px 20px;
       display: flex;
       flex-direction: column;
-      gap: 12px;
-      transition: opacity 0.5s ease, transform 0.5s ease;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      gap: 10px;
+      transition: opacity 0.4s ease, transform 0.4s ease;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+      margin-bottom: 5px;
     }
 
     .progress-info {
@@ -257,7 +257,7 @@
       justify-content: space-between;
       align-items: center;
       font-family: 'Orbitron', sans-serif;
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       font-weight: 700;
       color: #94a3b8;
     }
@@ -281,7 +281,7 @@
       width: 0%;
       background: linear-gradient(90deg, var(--accent-cyan), var(--accent-pink));
       border-radius: 10px;
-      transition: width 0.4s ease;
+      transition: width 0.3s ease;
     }
 
     .btn-vote {
@@ -293,23 +293,24 @@
       font-size: 1rem;
       font-weight: 900;
       letter-spacing: 1.5px;
-      padding: 14px;
+      padding: 13px;
       border-radius: 12px;
       cursor: pointer;
       text-transform: uppercase;
       transition: all 0.2s ease;
-      box-shadow: 0 4px 15px rgba(0, 240, 255, 0.3);
+      box-shadow: 0 5px 15px rgba(0, 240, 255, 0.35);
     }
 
+    .btn-vote:hover { filter: brightness(1.1); transform: translateY(-1px); }
     .btn-vote:active { transform: scale(0.98); }
 
     .fade-out {
       opacity: 0 !important;
-      transform: translateY(20px) !important;
+      transform: translateY(15px) !important;
       pointer-events: none !important;
     }
 
-    /* CONTENEDOR DE BOTONES DE PRUEBA (ESQUINA INFERIOR DERECHA) */
+    /* BOTONES DE PRUEBA (ESQUINA INFERIOR DERECHA) */
     .test-box {
       position: fixed;
       bottom: 12px;
@@ -320,17 +321,18 @@
     }
 
     .btn-test {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.15);
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.18);
       color: #94a3b8;
-      padding: 5px 10px;
+      padding: 6px 10px;
       font-size: 0.7rem;
       border-radius: 8px;
       cursor: pointer;
-      backdrop-filter: blur(5px);
+      backdrop-filter: blur(8px);
       font-family: 'Orbitron', sans-serif;
+      transition: all 0.2s;
     }
-    .btn-test:hover { background: rgba(255,255,255,0.15); color: #fff; }
+    .btn-test:hover { background: rgba(255,255,255,0.2); color: #fff; }
   </style>
 </head>
 <body>
@@ -345,10 +347,10 @@
     <h1 class="banner-title">JHODA HA RESPONDIDO</h1>
   </div>
 
-  <!-- BANNER DE FRACASO / META NO CUMPLIDA -->
+  <!-- BANNER DE FRACASO -->
   <div id="failedBanner" class="status-banner failed-mode">
     <span class="banner-badge">● TIEMPO AGOTADO ●</span>
-    <h1 class="banner-title">NO SE CUMPLió CON LA META</h1>
+    <h1 class="banner-title">NO SE CUMPLIÓ CON LA META</h1>
   </div>
 
   <div class="app-container">
@@ -389,8 +391,8 @@
 
   <!-- BOTONES DE PRUEBA RÁPIDA -->
   <div class="test-box">
-    <button class="btn-test" onclick="vote(100)">⚡ Test Éxito (+100)</button>
-    <button class="btn-test" onclick="simulateTimeOut()">⌛ Test No Meta</button>
+    <button class="btn-test" onclick="vote(100)">⚡ Éxito (+100)</button>
+    <button class="btn-test" onclick="simulateTimeOut()">⌛ No Meta</button>
   </div>
 
   <script>
@@ -413,7 +415,6 @@
       }
     }
 
-    // CUANDO SE CUMPLE LA META
     function completeGoal() {
       isGameOver = true;
       document.getElementById('headerUI').classList.add('fade-out');
@@ -421,20 +422,19 @@
 
       const flash = document.getElementById('flashOverlay');
       flash.classList.add('active');
-      setTimeout(() => flash.classList.remove('active'), 600);
+      setTimeout(() => flash.classList.remove('active'), 500);
 
       triggerParticleBurst();
 
       setTimeout(() => {
         document.getElementById('cardWrapper').classList.add('flipped');
-      }, 300);
+      }, 250);
 
       setTimeout(() => {
         document.getElementById('successBanner').classList.add('show');
-      }, 700);
+      }, 600);
     }
 
-    // CUANDO EL TIEMPO LLEGA A CERO Y NO SE CUMPLE LA META
     function simulateTimeOut() {
       if (isGameOver) return;
       isGameOver = true;
@@ -442,19 +442,14 @@
       document.getElementById('headerUI').classList.add('fade-out');
       document.getElementById('voteUI').classList.add('fade-out');
 
-      // Poner el reloj en 00:00:00
       document.getElementById('timer').innerText = "00:00:00";
-
-      // Aplicar estado fallido a la carta
       document.getElementById('cardWrapper').classList.add('failed-state');
 
-      // Mostrar banner de que no se cumplió
       setTimeout(() => {
         document.getElementById('failedBanner').classList.add('show');
       }, 400);
     }
 
-    // --- CRONÓMETRO REAL ---
     let totalSeconds = 5 * 3600;
     function updateTimer() {
       if (isGameOver) return;
@@ -469,7 +464,6 @@
       if (totalSeconds > 0) {
         totalSeconds--;
       } else {
-        // Si el tiempo natural llega a 0 y no se llenaron los votos
         if (votes < targetVotes) {
           simulateTimeOut();
         }
@@ -478,7 +472,6 @@
     setInterval(updateTimer, 1000);
     updateTimer();
 
-    // --- EFECTO DE RÁFAGA DE PARTÍCULAS (ÉXITO) ---
     const canvas = document.getElementById('burstCanvas');
     const ctx = canvas.getContext('2d');
     let particles = [];
@@ -493,16 +486,16 @@
     function triggerParticleBurst() {
       const cx = canvas.width / 2;
       const cy = canvas.height / 2;
-      for (let i = 0; i < 70; i++) {
+      for (let i = 0; i < 60; i++) {
         const angle = Math.random() * Math.PI * 2;
-        const speed = Math.random() * 8 + 2;
+        const speed = Math.random() * 7 + 2;
         particles.push({
           x: cx,
           y: cy,
           vx: Math.cos(angle) * speed,
           vy: Math.sin(angle) * speed,
-          radius: Math.random() * 3 + 1,
-          color: Math.random() > 0.5 ? '#00f0ff' : '#ff0055',
+          radius: Math.random() * 2.5 + 1,
+          color: Math.random() > 0.5 ? '#00f0ff' : '#ff0055',ymers: 1,
           alpha: 1,
           decay: Math.random() * 0.02 + 0.015
         });
@@ -536,4 +529,5 @@
     }
   </script>
 </body>
-</html>
+  </html>
+        
