@@ -1,73 +1,60 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Panel - Blood Strike LATAM</title>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Plus+Jakarta+Sans:wght@500;700&display=swap" rel="stylesheet">
-  
-  <!-- Firebase SDKs -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-
-  <style>
-    body {
-      background-color: #05070a; color: #fff; font-family: 'Plus Jakarta Sans', sans-serif;
-      display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px;
-    }
-    .admin-card {
-      background: #0d111a; border: 1px solid rgba(255,255,255,0.1); border-radius: 16px;
-      padding: 30px; width: 100%; max-width: 450px; box-shadow: 0 10px 30px rgba(0,0,0,0.8);
-    }
-    h1 { font-family: 'Orbitron', sans-serif; font-size: 1.2rem; color: #00f0ff; margin-bottom: 20px; text-align: center; }
-    .form-group { margin-bottom: 15px; display: flex; flex-direction: column; gap: 5px; }
-    label { font-size: 0.8rem; font-family: 'Orbitron', sans-serif; color: #94a3b8; }
-    input {
-      background: #161b22; border: 1px solid rgba(255,255,255,0.15); color: #fff;
-      padding: 10px 14px; border-radius: 8px; font-size: 0.9rem; font-family: inherit;
-    }
-    button {
-      width: 100%; background: linear-gradient(135deg, #00f0ff 0%, #0072ff 100%);
-      color: #07090e; border: none; font-family: 'Orbitron', sans-serif; font-weight: 900;
-      padding: 12px; border-radius: 8px; cursor: pointer; margin-top: 10px; text-transform: uppercase;
-    }
-    .btn-danger { background: linear-gradient(135deg, #ff3344 0%, #cc0022 100%); color: #fff; margin-top: 15px; }
-    .stats { margin-top: 20px; font-size: 0.9rem; text-align: center; color: #94a3b8; font-family: 'Orbitron', sans-serif; }
-    .stats span { color: #00f0ff; font-weight: bold; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Avanzado - Blood Strike LATAM</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Orbitron', sans-serif; }
+        body { background-color: #050508; color: #fff; padding: 20px; display: flex; flex-direction: column; align-items: center; }
+        h1 { color: #00f3ff; margin-bottom: 20px; font-size: 1.3rem; text-align: center; text-shadow: 0 0 10px rgba(0,243,255,0.4); }
+        .form-container { background: rgba(15, 15, 25, 0.95); border: 1px solid rgba(255,0,85,0.4); padding: 20px; border-radius: 12px; width: 100%; max-width: 400px; box-shadow: 0 0 20px rgba(0,0,0,0.8); }
+        .input-group { margin-bottom: 12px; }
+        label { display: block; font-size: 0.75rem; color: #8a8ab0; margin-bottom: 4px; letter-spacing: 1px; }
+        input { width: 100%; padding: 10px; background: #0b0b14; border: 1px solid rgba(0,243,255,0.3); border-radius: 6px; color: #fff; font-size: 0.9rem; }
+        button { width: 100%; background: linear-gradient(135deg, #00f3ff, #0066ff); color: #000; border: none; padding: 12px; border-radius: 6px; font-weight: 900; cursor: pointer; text-transform: uppercase; margin-top: 10px; box-shadow: 0 0 15px rgba(0,243,255,0.3); }
+        .reset-btn { background: linear-gradient(135deg, #ff0055, #990033); color: #fff; box-shadow: 0 0 15px rgba(255,0,85,0.3); }
+        .msg { margin-top: 15px; font-size: 0.8rem; text-align: center; color: #00f3ff; }
+    </style>
 </head>
 <body>
 
-  <div class="admin-card">
-    <h1>PANEL DE CONTROL (FIREBASE)</h1>
-    
-    <div class="form-group">
-      <label>Nombre del Creador</label>
-      <input type="text" id="inputName" placeholder="Ej. JHODA">
+    <h1>PANEL DE ADMINISTRACIÓN</h1>
+
+    <div class="form-container">
+        <div class="input-group">
+            <label>NOMBRE DEL CREADOR (Registro interno)</label>
+            <input type="text" id="creatorName" placeholder="Ej. Jhoda">
+        </div>
+        <div class="input-group">
+            <label>IMAGEN FRENTE (.png)</label>
+            <input type="text" id="frontImg" placeholder="1000013137.png">
+        </div>
+        <div class="input-group">
+            <label>IMAGEN DORSO (.png)</label>
+            <input type="text" id="backImg" placeholder="1000013129.png">
+        </div>
+        <div class="input-group">
+            <label>CANTIDAD DE VOTOS (Prueba Ej: 499)</label>
+            <input type="number" id="currentVotes" placeholder="0">
+        </div>
+        <div class="input-group">
+            <label>TIEMPO DE DURACIÓN (En Minutos)</label>
+            <input type="number" id="eventMinutes" placeholder="300" value="300">
+        </div>
+        
+        <button onclick="saveConfig()">Guardar Configuración</button>
+        <button class="reset-btn" onclick="resetVotes()">Reiniciar Votos a 0</button>
+        
+        <div class="msg" id="adminMsg"></div>
     </div>
 
-    <div class="form-group">
-      <label>Archivo de Imagen Frontal (Carta Revelada)</label>
-      <input type="text" id="inputFront" placeholder="1000013137.png">
-    </div>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
-    <div class="form-group">
-      <label>Archivo de Imagen Trasera (Dorso)</label>
-      <input type="text" id="inputBack" placeholder="1000013129.png">
-    </div>
-
-    <button onclick="saveChanges()">Guardar en Firebase</button>
-    
-    <div class="stats">
-      Votos Actuales: <span id="statVotes">0</span> / 500
-    </div>
-
-    <button class="btn-danger" onclick="resetVotes()">Reiniciar Votos (Siguiente Creador)</button>
-  </div>
-
-  <script>
-    // ⚠️ REEMPLAZA CON TUS DATOS REALES DE FIREBASE
-const firebaseConfig = {
+    <script>
+        const firebaseConfig = {
   apiKey: "AIzaSyC-a1OGET1bsfBQdsFBomwvOaPgpmC-0bQ",
   authDomain: "gestor-creadores-rrss.firebaseapp.com",
   projectId: "gestor-creadores-rrss",
@@ -76,66 +63,68 @@ const firebaseConfig = {
   appId: "1:181748634176:web:bd0bc887c0f976b43d05a5",
   measurementId: "G-9744QBXJKH"
 };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const docRef = db.collection("creators").doc("current_config");
 
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
-    const docRef = db.collection("creators").doc("current_config");
+        docRef.get().then((doc) => {
+            if (doc.exists) {
+                const data = doc.data();
+                document.getElementById("creatorName").value = data.creatorName || "";
+                document.getElementById("frontImg").value = data.frontImg || "";
+                document.getElementById("backImg").value = data.backImg || "";
+                document.getElementById("currentVotes").value = data.votes || 0;
+            }
+        });
 
-    // Cargar datos actuales desde Firestore
-    async function loadData() {
-      try {
-        const doc = await docRef.get();
-        if (doc.exists) {
-          const data = doc.data();
-          document.getElementById('inputName').value = data.creatorName || '';
-          document.getElementById('inputFront').value = data.frontImg || '';
-          document.getElementById('inputBack').value = data.backImg || '';
-          document.getElementById('statVotes').innerText = data.votes || 0;
+        async function saveConfig() {
+            const creatorName = document.getElementById("creatorName").value;
+            const frontImg = document.getElementById("frontImg").value;
+            const backImg = document.getElementById("backImg").value;
+            const votes = parseInt(document.getElementById("currentVotes").value) || 0;
+            const minutes = parseInt(document.getElementById("eventMinutes").value) || 300;
+            
+            const endTime = new Date().getTime() + (minutes * 60 * 1000);
+            const completed = votes >= 500;
+
+            try {
+                await docRef.set({
+                    creatorName,
+                    frontImg,
+                    backImg,
+                    votes,
+                    endTime,
+                    completed,
+                    voters: [] // Limpia votantes previos para permitir pruebas limpias con el nuevo conteo
+                }, { merge: true });
+
+                document.getElementById("adminMsg").innerText = "¡Configuración y votos guardados con éxito!";
+            } catch (e) {
+                console.error(e);
+                alert("Error al guardar: " + e.message);
+            }
         }
-      } catch (err) {
-        console.error("Error cargando datos:", err);
-      }
-    }
 
-    async function saveChanges() {
-      const creatorName = document.getElementById('inputName').value;
-      const frontImg = document.getElementById('inputFront').value;
-      const backImg = document.getElementById('inputBack').value;
+        async function resetVotes() {
+            if (confirm("¿Estás seguro de reiniciar los votos a 0?")) {
+                try {
+                    const minutes = parseInt(document.getElementById("eventMinutes").value) || 300;
+                    const endTime = new Date().getTime() + (minutes * 60 * 1000);
 
-      try {
-        await docRef.set({
-          creatorName: creatorName,
-          frontImg: frontImg,
-          backImg: backImg
-        }, { merge: true });
-
-        alert("¡Configuración guardada en Firebase con éxito!");
-        loadData();
-      } catch (err) {
-        console.error("Error al guardar:", err);
-        alert("Error al actualizar la configuración.");
-      }
-    }
-
-    async function resetVotes() {
-      if (confirm("¿Estás seguro de reiniciar los votos a 0 y vaciar el registro de votantes para el siguiente creador?")) {
-        try {
-          await docRef.set({
-            votes: 0,
-            voters: [],
-            completed: false
-          }, { merge: true });
-
-          alert("¡Votos reiniciados correctamente en Firebase!");
-          loadData();
-        } catch (err) {
-          console.error("Error al reiniciar:", err);
-          alert("Error al reiniciar los votos.");
+                    await docRef.update({
+                        votes: 0,
+                        voters: [],
+                        completed: false,
+                        endTime: endTime
+                    });
+                    document.getElementById("currentVotes").value = 0;
+                    document.getElementById("adminMsg").innerText = "¡Votos reiniciados a 0 correctamente!";
+                } catch (e) {
+                    console.error(e);
+                    alert("Error al reiniciar: " + e.message);
+                }
+            }
         }
-      }
-    }
-
-    loadData();
-  </script>
+    </script>
 </body>
 </html>
