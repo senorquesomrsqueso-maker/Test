@@ -3,19 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Avanzado - Blood Strike LATAM</title>
+    <title>Admin - Blood Strike LATAM</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Orbitron', sans-serif; }
-        body { background-color: #050508; color: #fff; padding: 20px; display: flex; flex-direction: column; align-items: center; }
-        h1 { color: #00f3ff; margin-bottom: 20px; font-size: 1.3rem; text-align: center; text-shadow: 0 0 10px rgba(0,243,255,0.4); }
-        .form-container { background: rgba(15, 15, 25, 0.95); border: 1px solid rgba(255,0,85,0.4); padding: 20px; border-radius: 12px; width: 100%; max-width: 400px; box-shadow: 0 0 20px rgba(0,0,0,0.8); }
-        .input-group { margin-bottom: 12px; }
-        label { display: block; font-size: 0.75rem; color: #8a8ab0; margin-bottom: 4px; letter-spacing: 1px; }
-        input { width: 100%; padding: 10px; background: #0b0b14; border: 1px solid rgba(0,243,255,0.3); border-radius: 6px; color: #fff; font-size: 0.9rem; }
-        button { width: 100%; background: linear-gradient(135deg, #00f3ff, #0066ff); color: #000; border: none; padding: 12px; border-radius: 6px; font-weight: 900; cursor: pointer; text-transform: uppercase; margin-top: 10px; box-shadow: 0 0 15px rgba(0,243,255,0.3); }
-        .reset-btn { background: linear-gradient(135deg, #ff0055, #990033); color: #fff; box-shadow: 0 0 15px rgba(255,0,85,0.3); }
-        .msg { margin-top: 15px; font-size: 0.8rem; text-align: center; color: #00f3ff; }
+        body { background-color: #030307; color: #fff; padding: 20px; display: flex; flex-direction: column; align-items: center; background-image: radial-gradient(circle at center, #111126 0%, #030307 100%); min-height: 100vh; }
+        h1 { color: #00f3ff; margin-bottom: 20px; font-size: 1.3rem; text-align: center; text-shadow: 0 0 15px rgba(0,243,255,0.5); }
+        .form-container { background: rgba(12, 12, 24, 0.95); border: 1px solid rgba(0,243,255,0.4); padding: 24px; border-radius: 14px; width: 100%; max-width: 420px; box-shadow: 0 10px 30px rgba(0,0,0,0.9); }
+        .input-group { margin-bottom: 15px; }
+        label { display: block; font-size: 0.75rem; color: #8a8ab0; margin-bottom: 6px; letter-spacing: 1px; font-weight: 700; }
+        input { width: 100%; padding: 12px; background: #070712; border: 1px solid rgba(0,243,255,0.3); border-radius: 8px; color: #fff; font-size: 0.95rem; outline: none; transition: border-color 0.2s; }
+        input:focus { border-color: #00f3ff; box-shadow: 0 0 10px rgba(0,243,255,0.3); }
+        button { width: 100%; background: linear-gradient(135deg, #00f3ff 0%, #0077ff 100%); color: #000; border: none; padding: 14px; border-radius: 8px; font-weight: 900; cursor: pointer; text-transform: uppercase; margin-top: 10px; box-shadow: 0 0 15px rgba(0,243,255,0.4); transition: transform 0.2s; }
+        button:hover { transform: translateY(-2px); }
+        .reset-btn { background: linear-gradient(135deg, #ff0055 0%, #990033 100%); color: #fff; box-shadow: 0 0 15px rgba(255,0,85,0.4); }
+        .msg { margin-top: 15px; font-size: 0.85rem; text-align: center; color: #00f3ff; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -24,27 +26,27 @@
 
     <div class="form-container">
         <div class="input-group">
-            <label>NOMBRE DEL CREADOR (Registro interno)</label>
+            <label>NOMBRE DEL CREADOR / TESTER (Ej. Jhoda, Bigmat)</label>
             <input type="text" id="creatorName" placeholder="Ej. Jhoda">
         </div>
         <div class="input-group">
-            <label>IMAGEN FRENTE (.png)</label>
+            <label>IMAGEN FRENTE (Carta revelada - Ej: 1000013137.png)</label>
             <input type="text" id="frontImg" placeholder="1000013137.png">
         </div>
         <div class="input-group">
-            <label>IMAGEN DORSO (.png)</label>
+            <label>IMAGEN DORSO (Parte trasera inicial - Ej: 1000013129.png)</label>
             <input type="text" id="backImg" placeholder="1000013129.png">
         </div>
         <div class="input-group">
-            <label>CANTIDAD DE VOTOS (Prueba Ej: 499)</label>
+            <label>CANTIDAD DE VOTOS ACTUALES (Ej: 499 para probar)</label>
             <input type="number" id="currentVotes" placeholder="0">
         </div>
         <div class="input-group">
-            <label>TIEMPO DE DURACIÓN (En Minutos)</label>
-            <input type="number" id="eventMinutes" placeholder="300" value="300">
+            <label>TIEMPO DE DURACIÓN (En Minutos - Ej: 120)</label>
+            <input type="number" id="eventMinutes" placeholder="120" value="120">
         </div>
         
-        <button onclick="saveConfig()">Guardar Configuración</button>
+        <button onclick="saveConfig()">Guardar y Sincronizar</button>
         <button class="reset-btn" onclick="resetVotes()">Reiniciar Votos a 0</button>
         
         <div class="msg" id="adminMsg"></div>
@@ -62,7 +64,8 @@
   messagingSenderId: "181748634176",
   appId: "1:181748634176:web:bd0bc887c0f976b43d05a5",
   measurementId: "G-9744QBXJKH"
-};
+        };
+
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
         const docRef = db.collection("creators").doc("current_config");
@@ -78,11 +81,11 @@
         });
 
         async function saveConfig() {
-            const creatorName = document.getElementById("creatorName").value;
-            const frontImg = document.getElementById("frontImg").value;
-            const backImg = document.getElementById("backImg").value;
+            const creatorName = document.getElementById("creatorName").value.trim() || "CREADOR";
+            const frontImg = document.getElementById("frontImg").value.trim();
+            const backImg = document.getElementById("backImg").value.trim();
             const votes = parseInt(document.getElementById("currentVotes").value) || 0;
-            const minutes = parseInt(document.getElementById("eventMinutes").value) || 300;
+            const minutes = parseInt(document.getElementById("eventMinutes").value) || 120;
             
             const endTime = new Date().getTime() + (minutes * 60 * 1000);
             const completed = votes >= 500;
@@ -95,20 +98,20 @@
                     votes,
                     endTime,
                     completed,
-                    voters: [] // Limpia votantes previos para permitir pruebas limpias con el nuevo conteo
+                    voters: [] // Reinicia votantes para pruebas limpias
                 }, { merge: true });
 
-                document.getElementById("adminMsg").innerText = "¡Configuración y votos guardados con éxito!";
+                document.getElementById("adminMsg").innerText = "¡Configuración y creador actualizados!";
             } catch (e) {
                 console.error(e);
-                alert("Error al guardar: " + e.message);
+                alert("Error al actualizar: " + e.message);
             }
         }
 
         async function resetVotes() {
             if (confirm("¿Estás seguro de reiniciar los votos a 0?")) {
                 try {
-                    const minutes = parseInt(document.getElementById("eventMinutes").value) || 300;
+                    const minutes = parseInt(document.getElementById("eventMinutes").value) || 120;
                     const endTime = new Date().getTime() + (minutes * 60 * 1000);
 
                     await docRef.update({
@@ -118,7 +121,7 @@
                         endTime: endTime
                     });
                     document.getElementById("currentVotes").value = 0;
-                    document.getElementById("adminMsg").innerText = "¡Votos reiniciados a 0 correctamente!";
+                    document.getElementById("adminMsg").innerText = "¡Votos reseteados a 0!";
                 } catch (e) {
                     console.error(e);
                     alert("Error al reiniciar: " + e.message);
