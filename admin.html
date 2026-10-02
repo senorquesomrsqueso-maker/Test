@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel - Blood Strike LATAM</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Plus+Jakarta+Sans:wght@500;700&display=swap" rel="stylesheet">
+  
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
+  <style>
+    body {
+      background-color: #05070a; color: #fff; font-family: 'Plus Jakarta Sans', sans-serif;
+      display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px;
+    }
+    .admin-card {
+      background: #0d111a; border: 1px solid rgba(255,255,255,0.1); border-radius: 16px;
+      padding: 30px; width: 100%; max-width: 450px; box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+    }
+    h1 { font-family: 'Orbitron', sans-serif; font-size: 1.2rem; color: #00f0ff; margin-bottom: 20px; text-align: center; }
+    .form-group { margin-bottom: 15px; display: flex; flex-direction: column; gap: 5px; }
+    label { font-size: 0.8rem; font-family: 'Orbitron', sans-serif; color: #94a3b8; }
+    input {
+      background: #161b22; border: 1px solid rgba(255,255,255,0.15); color: #fff;
+      padding: 10px 14px; border-radius: 8px; font-size: 0.9rem; font-family: inherit;
+    }
+    button {
+      width: 100%; background: linear-gradient(135deg, #00f0ff 0%, #0072ff 100%);
+      color: #07090e; border: none; font-family: 'Orbitron', sans-serif; font-weight: 900;
+      padding: 12px; border-radius: 8px; cursor: pointer; margin-top: 10px; text-transform: uppercase;
+    }
+    .btn-danger { background: linear-gradient(135deg, #ff3344 0%, #cc0022 100%); color: #fff; margin-top: 15px; }
+    .stats { margin-top: 20px; font-size: 0.9rem; text-align: center; color: #94a3b8; font-family: 'Orbitron', sans-serif; }
+    .stats span { color: #00f0ff; font-weight: bold; }
+  </style>
+</head>
+<body>
+
+  <div class="admin-card">
+    <h1>PANEL DE CONTROL (FIREBASE)</h1>
+    
+    <div class="form-group">
+      <label>Nombre del Creador</label>
+      <input type="text" id="inputName" placeholder="Ej. JHODA">
+    </div>
+
+    <div class="form-group">
+      <label>Archivo de Imagen Frontal (Carta Revelada)</label>
+      <input type="text" id="inputFront" placeholder="1000013137.png">
+    </div>
+
+    <div class="form-group">
+      <label>Archivo de Imagen Trasera (Dorso)</label>
+      <input type="text" id="inputBack" placeholder="1000013129.png">
+    </div>
+
+    <button onclick="saveChanges()">Guardar en Firebase</button>
+    
+    <div class="stats">
+      Votos Actuales: <span id="statVotes">0</span> / 500
+    </div>
+
+    <button class="btn-danger" onclick="resetVotes()">Reiniciar Votos (Siguiente Creador)</button>
+  </div>
+
+  <script>
+    // ⚠️ REEMPLAZA CON TUS DATOS REALES DE FIREBASE
+const firebaseConfig = {
+            apiKey: "AIzaSyAHPsKLBAJCu-N5SVS7mTdVHF-5AAVIGy4",
+  authDomain: "blood-strike-torneo.firebaseapp.com",
+  projectId: "blood-strike-torneo",
+  storageBucket: "blood-strike-torneo.firebasestorage.app",
+  messagingSenderId: "756331439350",
+  appId: "1:756331439350:web:06fbe26b312071d94ef8d7",
+  measurementId: "G-QWJBREPW9S"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    const docRef = db.collection("creators").doc("current_config");
+
+    // Cargar datos actuales desde Firestore
+    async function loadData() {
+      try {
+        const doc = await docRef.get();
+        if (doc.exists) {
+          const data = doc.data();
+          document.getElementById('inputName').value = data.creatorName || '';
+          document.getElementById('inputFront').value = data.frontImg || '';
+          document.getElementById('inputBack').value = data.backImg || '';
+          document.getElementById('statVotes').innerText = data.votes || 0;
+        }
+      } catch (err) {
+        console.error("Error cargando datos:", err);
+      }
+    }
+
+    async function saveChanges() {
+      const creatorName = document.getElementById('inputName').value;
+      const frontImg = document.getElementById('inputFront').value;
+      const backImg = document.getElementById('inputBack').value;
+
+      try {
+        await docRef.set({
+          creatorName: creatorName,
+          frontImg: frontImg,
+          backImg: backImg
+        }, { merge: true });
+
+        alert("¡Configuración guardada en Firebase con éxito!");
+        loadData();
+      } catch (err) {
+        console.error("Error al guardar:", err);
+        alert("Error al actualizar la configuración.");
+      }
+    }
+
+    async function resetVotes() {
+      if (confirm("¿Estás seguro de reiniciar los votos a 0 y vaciar el registro de votantes para el siguiente creador?")) {
+        try {
+          await docRef.set({
+            votes: 0,
+            voters: [],
+            completed: false
+          }, { merge: true });
+
+          alert("¡Votos reiniciados correctamente en Firebase!");
+          loadData();
+        } catch (err) {
+          console.error("Error al reiniciar:", err);
+          alert("Error al reiniciar los votos.");
+        }
+      }
+    }
+
+    loadData();
+  </script>
+</body>
+</html>
