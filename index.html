@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Blood Strike LATAM - Revelación</title>
   
-  <!-- Tipografía Limpia & Gamer Profesional -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Plus+Jakarta+Sans:wght@500;700;800&display=swap" rel="stylesheet">
@@ -16,7 +15,7 @@
       --card-bg: #0d111a;
       --accent-cyan: #00f0ff;
       --accent-pink: #ff0055;
-      --text-muted: #64748b;
+      --accent-red: #ff3344;
       --radius-ui: 14px;
     }
 
@@ -42,7 +41,6 @@
       position: relative;
     }
 
-    /* Fondo con cuadrícula ultra limpia estilo cyberpunk minimalista */
     .bg-grid {
       position: absolute;
       inset: 0;
@@ -54,7 +52,6 @@
       z-index: 0;
     }
 
-    /* Destello de fondo al completar */
     .flash-overlay {
       position: fixed;
       inset: 0;
@@ -64,11 +61,8 @@
       z-index: 50;
       transition: opacity 0.5s ease;
     }
-    .flash-overlay.active {
-      opacity: 1;
-    }
+    .flash-overlay.active { opacity: 1; }
 
-    /* Canvas para ráfaga de partículas */
     #burstCanvas {
       position: fixed;
       inset: 0;
@@ -78,7 +72,6 @@
       z-index: 40;
     }
 
-    /* Layout Principal */
     .app-container {
       width: 100%;
       max-width: 420px;
@@ -91,7 +84,7 @@
       padding: 10px 0;
     }
 
-    /* --- ENCABEZADO --- */
+    /* ENCABEZADO */
     .header-ui {
       text-align: center;
       transition: opacity 0.5s ease, transform 0.5s ease;
@@ -125,8 +118,8 @@
       box-shadow: 0 4px 20px rgba(0,0,0,0.4);
     }
 
-    /* --- BANNER META CUMPLIDA (Posicionado para móviles sin cortarse) --- */
-    .meta-banner {
+    /* BANNERS DE ESTADO (SUPERIOR) */
+    .status-banner {
       position: absolute;
       top: 5%;
       left: 0;
@@ -140,35 +133,42 @@
       padding: 0 15px;
     }
 
-    .meta-banner.show {
+    .status-banner.show {
       opacity: 1;
       transform: translateY(0) scale(1);
     }
 
-    .meta-badge {
+    .banner-badge {
       font-family: 'Orbitron', sans-serif;
       font-size: 0.7rem;
       font-weight: 900;
       letter-spacing: 2px;
-      background: linear-gradient(90deg, var(--accent-cyan), var(--accent-pink));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
       text-transform: uppercase;
       margin-bottom: 4px;
       display: block;
     }
 
-    .meta-title {
+    .banner-title {
       font-family: 'Orbitron', sans-serif;
-      font-size: clamp(1.4rem, 5vw, 2rem);
+      font-size: clamp(1.3rem, 4.5vw, 1.8rem);
       font-weight: 900;
       color: #ffffff;
       text-transform: uppercase;
       letter-spacing: 1px;
-      text-shadow: 0 0 20px rgba(0,240,255,0.5);
     }
 
-    /* --- ESCENA CARTA 3D --- */
+    /* Estilos específicos para éxito y fracaso */
+    .success-mode .banner-badge {
+      background: linear-gradient(90deg, var(--accent-cyan), var(--accent-pink));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .success-mode .banner-title { text-shadow: 0 0 20px rgba(0,240,255,0.5); }
+
+    .failed-mode .banner-badge { color: var(--accent-red); }
+    .failed-mode .banner-title { color: #ff4d4d; text-shadow: 0 0 20px rgba(255,51,68,0.4); }
+
+    /* CARTA 3D */
     .stage {
       perspective: 1000px;
       width: 100%;
@@ -192,7 +192,6 @@
       50% { transform: translateY(-12px) rotateX(-4deg) rotateY(2deg); }
     }
 
-    /* Giro de la carta al completar */
     .card-wrapper.flipped {
       animation: floatFlipped 4s ease-in-out infinite 1.2s !important;
       transform: scale(1.08) rotateY(180deg) !important;
@@ -201,6 +200,14 @@
     @keyframes floatFlipped {
       0%, 100% { transform: scale(1.08) rotateY(180deg) translateY(0px); }
       50% { transform: scale(1.08) rotateY(184deg) translateY(-10px); }
+    }
+
+    /* Estado bloqueado si no se cumple la meta */
+    .card-wrapper.failed-state {
+      animation: none !important;
+      transform: scale(0.95) rotateX(10deg);
+      filter: grayscale(40%) brightness(0.7);
+      transition: all 0.8s ease;
     }
 
     .card-face {
@@ -221,16 +228,10 @@
       display: block;
     }
 
-    .card-back {
-      transform: rotateY(0deg);
-    }
+    .card-back { transform: rotateY(0deg); }
+    .card-front { transform: rotateY(180deg); }
 
-    .card-front {
-      transform: rotateY(180deg);
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.9), 0 0 30px rgba(255, 0, 85, 0.4);
-    }
-
-    /* --- BOTÓN Y BARRA DE PROGRESO --- */
+    /* PANEL DE VOTACIÓN */
     .vote-ui {
       width: 100%;
       background: rgba(13, 17, 26, 0.6);
@@ -267,7 +268,6 @@
       font-weight: 900;
     }
 
-    /* Barra de progreso limpia */
     .progress-bar-bg {
       width: 100%;
       height: 6px;
@@ -284,7 +284,6 @@
       transition: width 0.4s ease;
     }
 
-    /* Botón de Votar elegante */
     .btn-vote {
       width: 100%;
       background: linear-gradient(135deg, #00f0ff 0%, #0072ff 100%);
@@ -302,33 +301,36 @@
       box-shadow: 0 4px 15px rgba(0, 240, 255, 0.3);
     }
 
-    .btn-vote:active {
-      transform: scale(0.98);
-      box-shadow: 0 2px 8px rgba(0, 240, 255, 0.2);
-    }
+    .btn-vote:active { transform: scale(0.98); }
 
-    /* Ocultar interfaz al completar */
     .fade-out {
       opacity: 0 !important;
       transform: translateY(20px) !important;
       pointer-events: none !important;
     }
 
-    /* Botón de prueba en esquina */
-    .btn-test {
+    /* CONTENEDOR DE BOTONES DE PRUEBA (ESQUINA INFERIOR DERECHA) */
+    .test-box {
       position: fixed;
       bottom: 12px;
       right: 12px;
       z-index: 100;
+      display: flex;
+      gap: 6px;
+    }
+
+    .btn-test {
       background: rgba(255, 255, 255, 0.05);
       border: 1px solid rgba(255, 255, 255, 0.15);
       color: #94a3b8;
       padding: 5px 10px;
-      font-size: 0.75rem;
+      font-size: 0.7rem;
       border-radius: 8px;
       cursor: pointer;
       backdrop-filter: blur(5px);
+      font-family: 'Orbitron', sans-serif;
     }
+    .btn-test:hover { background: rgba(255,255,255,0.15); color: #fff; }
   </style>
 </head>
 <body>
@@ -337,10 +339,16 @@
   <div id="flashOverlay" class="flash-overlay"></div>
   <canvas id="burstCanvas"></canvas>
 
-  <!-- BANNER META CUMPLIDA -->
-  <div id="metaBanner" class="meta-banner">
-    <span class="meta-badge">● LEGADO DESBLOQUEADO ●</span>
-    <h1 class="meta-title">JHODA HA RESPONDIDO</h1>
+  <!-- BANNER DE ÉXITO -->
+  <div id="successBanner" class="status-banner success-mode">
+    <span class="banner-badge">● LEGADO DESBLOQUEADO ●</span>
+    <h1 class="banner-title">JHODA HA RESPONDIDO</h1>
+  </div>
+
+  <!-- BANNER DE FRACASO / META NO CUMPLIDA -->
+  <div id="failedBanner" class="status-banner failed-mode">
+    <span class="banner-badge">● TIEMPO AGOTADO ●</span>
+    <h1 class="banner-title">NO SE CUMPLió CON LA META</h1>
   </div>
 
   <div class="app-container">
@@ -351,14 +359,12 @@
       <div id="timer" class="timer">05:00:00</div>
     </header>
 
-    <!-- MESA / CARTA 3D -->
+    <!-- CARTA 3D -->
     <div class="stage">
       <div id="cardWrapper" class="card-wrapper">
-        <!-- Reverso (Carta azul) -->
         <div class="card-face card-back">
           <img src="1000013129.png" alt="Card Back">
         </div>
-        <!-- Frente (Jhoda) -->
         <div class="card-face card-front">
           <img src="1000013137.png" alt="Jhoda Card">
         </div>
@@ -381,21 +387,23 @@
 
   </div>
 
-  <!-- BOTÓN DE PRUEBA -->
-  <button class="btn-test" onclick="vote(100)">⚡ Test +100</button>
+  <!-- BOTONES DE PRUEBA RÁPIDA -->
+  <div class="test-box">
+    <button class="btn-test" onclick="vote(100)">⚡ Test Éxito (+100)</button>
+    <button class="btn-test" onclick="simulateTimeOut()">⌛ Test No Meta</button>
+  </div>
 
   <script>
     let votes = 0;
     const targetVotes = 500;
-    let isCompleted = false;
+    let isGameOver = false;
 
     function vote(amount) {
-      if (isCompleted) return;
+      if (isGameOver) return;
 
       votes += amount;
       if (votes > targetVotes) votes = targetVotes;
 
-      // Actualizar UI de votos
       document.getElementById('currentVotes').innerText = votes;
       const progressPercent = (votes / targetVotes) * 100;
       document.getElementById('progressBar').style.width = progressPercent + '%';
@@ -405,46 +413,72 @@
       }
     }
 
+    // CUANDO SE CUMPLE LA META
     function completeGoal() {
-      isCompleted = true;
-
-      // 1. Ocultar suavemente header y panel de votos
+      isGameOver = true;
       document.getElementById('headerUI').classList.add('fade-out');
       document.getElementById('voteUI').classList.add('fade-out');
 
-      // 2. Destello visual (Flash shockwave)
       const flash = document.getElementById('flashOverlay');
       flash.classList.add('active');
       setTimeout(() => flash.classList.remove('active'), 600);
 
-      // 3. Ráfaga de partículas de luz
       triggerParticleBurst();
 
-      // 4. Girar carta en 3D
       setTimeout(() => {
         document.getElementById('cardWrapper').classList.add('flipped');
       }, 300);
 
-      // 5. Mostrar banner superior bien posicionado
       setTimeout(() => {
-        document.getElementById('metaBanner').classList.add('show');
+        document.getElementById('successBanner').classList.add('show');
       }, 700);
     }
 
-    // --- CRONÓMETRO ---
+    // CUANDO EL TIEMPO LLEGA A CERO Y NO SE CUMPLE LA META
+    function simulateTimeOut() {
+      if (isGameOver) return;
+      isGameOver = true;
+
+      document.getElementById('headerUI').classList.add('fade-out');
+      document.getElementById('voteUI').classList.add('fade-out');
+
+      // Poner el reloj en 00:00:00
+      document.getElementById('timer').innerText = "00:00:00";
+
+      // Aplicar estado fallido a la carta
+      document.getElementById('cardWrapper').classList.add('failed-state');
+
+      // Mostrar banner de que no se cumplió
+      setTimeout(() => {
+        document.getElementById('failedBanner').classList.add('show');
+      }, 400);
+    }
+
+    // --- CRONÓMETRO REAL ---
     let totalSeconds = 5 * 3600;
     function updateTimer() {
+      if (isGameOver) return;
+      
       const h = Math.floor(totalSeconds / 3600);
       const m = Math.floor((totalSeconds % 3600) / 60);
       const s = totalSeconds % 60;
       const fmt = (n) => String(n).padStart(2, '0');
+      
       document.getElementById('timer').innerText = `${fmt(h)}:${fmt(m)}:${fmt(s)}`;
-      if (totalSeconds > 0) totalSeconds--;
+      
+      if (totalSeconds > 0) {
+        totalSeconds--;
+      } else {
+        // Si el tiempo natural llega a 0 y no se llenaron los votos
+        if (votes < targetVotes) {
+          simulateTimeOut();
+        }
+      }
     }
     setInterval(updateTimer, 1000);
     updateTimer();
 
-    // --- EFECTO DE RÁFAGA DE PARTÍCULAS ---
+    // --- EFECTO DE RÁFAGA DE PARTÍCULAS (ÉXITO) ---
     const canvas = document.getElementById('burstCanvas');
     const ctx = canvas.getContext('2d');
     let particles = [];
