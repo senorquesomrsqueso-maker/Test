@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test de Animación - GitHub Pages</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #0b0c10;
+            color: #c5c6c7;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .container {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            padding: 20px;
+            background: rgba(31, 40, 51, 0.7);
+            backdrop-filter: blur(8px);
+            border-radius: 16px;
+            border: 1px solid rgba(102, 252, 241, 0.2);
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+        }
+
+        h1 {
+            color: #66fcf1;
+            font-size: 1.8rem;
+            margin-bottom: 12px;
+        }
+
+        p {
+            font-size: 1rem;
+            line-height: 1.5;
+            color: #c5c6c7;
+            margin-bottom: 20px;
+        }
+
+        .img-preview {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #45a29e;
+            margin: 0 auto 15px;
+            display: block;
+            background: #1f2833;
+        }
+
+        /* Botón chiquito flotante de prueba */
+        .btn-test-anim {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 10;
+            background: rgba(102, 252, 241, 0.15);
+            color: #66fcf1;
+            border: 1px solid #66fcf1;
+            padding: 8px 14px;
+            font-size: 0.85rem;
+            border-radius: 20px;
+            cursor: pointer;
+            backdrop-filter: blur(5px);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-test-anim:hover {
+            background: #66fcf1;
+            color: #0b0c10;
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 6px 16px rgba(102, 252, 241, 0.4);
+        }
+
+        .btn-test-anim:active {
+            transform: translateY(0) scale(0.98);
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="animCanvas"></canvas>
+
+    <div class="container">
+        <!-- Ejemplo de uso de imagen subida a la carpeta 'assets' de GitHub -->
+        <img src="assets/imagen-ejemplo.jpg" alt="Imagen de Prueba" class="img-preview" onerror="this.src='https://via.placeholder.com/120/1f2833/66fcf1?text=Tu+Imagen';">
+        <h1>Vista Previa de Prueba</h1>
+        <p>Asegúrate de subir tus imágenes a la carpeta <code>assets/</code> o <code>images/</code> en tu repositorio de GitHub.</p>
+    </div>
+
+    <!-- Botón chiquito para probar la animación -->
+    <button id="btnTestAnim" class="btn-test-anim">
+        <span>✨</span>
+        <span>Probar Animación</span>
+    </button>
+
+    <script>
+        const canvas = document.getElementById('animCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        let particles = [];
+
+        class Particle {
+            constructor(x, y, isBurst = false) {
+                this.x = x || Math.random() * canvas.width;
+                this.y = y || Math.random() * canvas.height;
+                this.size = Math.random() * (isBurst ? 4 : 2) + 1;
+                this.speedX = isBurst ? (Math.random() - 0.5) * 8 : (Math.random() - 0.5) * 1.5;
+                this.speedY = isBurst ? (Math.random() - 0.5) * 8 : (Math.random() - 0.5) * 1.5;
+                this.color = isBurst ? `hsl(${Math.random() * 60 + 160}, 100%, 70%)` : '#66fcf1';
+                this.alpha = 1;
+                this.decay = isBurst ? Math.random() * 0.02 + 0.015 : 0;
+            }
+
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                if (this.decay > 0) {
+                    this.alpha -= this.decay;
+                } else {
+                    if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+                    if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+                }
+            }
+
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = Math.max(0, this.alpha);
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+
+        // Crear partículas iniciales de fondo
+        function initParticles() {
+            particles = [];
+            for (let i = 0; i < 60; i++) {
+                particles.push(new Particle());
+            }
+        }
+        initParticles();
+
+        // Función para detonar ráfaga de prueba
+        function triggerAnimation() {
+            const centerX = window.innerWidth / 2;
+            const centerY = window.innerHeight / 2;
+            for (let i = 0; i < 80; i++) {
+                particles.push(new Particle(centerX, centerY, true));
+            }
+        }
+
+        // Evento del botón chiquito de prueba
+        document.getElementById('btnTestAnim').addEventListener('click', () => {
+            triggerAnimation();
+        });
+
+        // Bucle de animación
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach((p, index) => {
+                p.update();
+                p.draw();
+                if (p.alpha <= 0) {
+                    particles.splice(index, 1);
+                }
+            });
+            requestAnimationFrame(animate);
+        }
+        animate();
+    </script>
+</body>
+</html>
+
