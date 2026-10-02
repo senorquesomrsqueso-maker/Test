@@ -9,23 +9,20 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Plus+Jakarta+Sans:wght@500;700;800&display=swap" rel="stylesheet">
 
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
   <style>
     :root {
       --bg-main: #07090e;
       --card-bg: #0d111a;
       --accent-cyan: #00f0ff;
       --accent-pink: #ff0055;
-      --accent-red: #ff3344;
       --radius-ui: 16px;
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      user-select: none;
-      -webkit-tap-highlight-color: transparent;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-tap-highlight-color: transparent; }
 
     body {
       background-color: var(--bg-main);
@@ -43,8 +40,7 @@
     }
 
     .bg-grid {
-      position: absolute;
-      inset: 0;
+      position: absolute; inset: 0;
       background-image: 
         linear-gradient(to right, rgba(255,255,255,0.02) 1px, transparent 1px),
         linear-gradient(to bottom, rgba(255,255,255,0.02) 1px, transparent 1px);
@@ -54,285 +50,106 @@
     }
 
     .flash-overlay {
-      position: fixed;
-      inset: 0;
+      position: fixed; inset: 0;
       background: radial-gradient(circle, rgba(0,240,255,0.4) 0%, transparent 70%);
-      opacity: 0;
-      pointer-events: none;
-      z-index: 50;
+      opacity: 0; pointer-events: none; z-index: 50;
       transition: opacity 0.5s ease;
     }
     .flash-overlay.active { opacity: 1; }
 
-    #burstCanvas {
-      position: fixed;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      z-index: 40;
-    }
+    #burstCanvas { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 40; }
 
     .app-container {
-      width: 100%;
-      max-width: 440px;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      align-items: center;
-      z-index: 10;
-      margin: 0 auto;
+      width: 100%; max-width: 440px; height: 100%;
+      display: flex; flex-direction: column; justify-content: space-between; align-items: center;
+      z-index: 10; margin: 0 auto;
     }
 
-    /* ENCABEZADO MULTIPLATAFORMA */
-    .header-ui {
-      text-align: center;
-      transition: opacity 0.4s ease, transform 0.4s ease;
-      width: 100%;
-      margin-top: 5px;
-    }
-
+    .header-ui { text-align: center; width: 100%; margin-top: 5px; }
     .tag {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 0.75rem;
-      font-weight: 700;
-      letter-spacing: 3px;
-      color: var(--accent-cyan);
-      text-transform: uppercase;
-      opacity: 0.9;
-      display: block;
-      margin-bottom: 6px;
+      font-family: 'Orbitron', sans-serif; font-size: 0.75rem; font-weight: 700;
+      letter-spacing: 3px; color: var(--accent-cyan); text-transform: uppercase;
+      opacity: 0.9; display: block; margin-bottom: 6px;
     }
 
-    .timer {
-      font-family: 'Orbitron', sans-serif;
-      font-size: clamp(1.8rem, 5vw, 2.3rem);
-      font-weight: 900;
-      letter-spacing: 3px;
-      color: #ffffff;
-      background: rgba(13, 17, 26, 0.8);
-      backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      padding: 8px 24px;
-      border-radius: var(--radius-ui);
-      display: inline-block;
-      box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+    .creator-title {
+      font-family: 'Orbitron', sans-serif; font-size: clamp(1.4rem, 4vw, 1.8rem);
+      font-weight: 900; color: #fff; text-transform: uppercase; letter-spacing: 1px;
     }
 
-    /* BANNERS DE ESTADO PROFESIONALES */
     .status-banner {
-      position: absolute;
-      top: 4%;
-      left: 0;
-      width: 100%;
-      text-align: center;
-      opacity: 0;
-      transform: translateY(-20px) scale(0.95);
-      transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-      pointer-events: none;
-      z-index: 30;
-      padding: 0 15px;
+      position: absolute; top: 4%; left: 0; width: 100%; text-align: center;
+      opacity: 0; transform: translateY(-20px) scale(0.95);
+      transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1); pointer-events: none; z-index: 30; padding: 0 15px;
     }
-
-    .status-banner.show {
-      opacity: 1;
-      transform: translateY(0) scale(1);
-    }
-
+    .status-banner.show { opacity: 1; transform: translateY(0) scale(1); }
     .banner-badge {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 0.75rem;
-      font-weight: 900;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      margin-bottom: 4px;
-      display: block;
-    }
-
-    .banner-title {
-      font-family: 'Orbitron', sans-serif;
-      font-size: clamp(1.4rem, 4vw, 1.8rem);
-      font-weight: 900;
-      color: #ffffff;
-      text-transform: uppercase;
-    }
-
-    .success-mode .banner-badge {
+      font-family: 'Orbitron', sans-serif; font-size: 0.75rem; font-weight: 900;
+      letter-spacing: 2px; text-transform: uppercase; margin-bottom: 4px; display: block;
       background: linear-gradient(90deg, var(--accent-cyan), var(--accent-pink));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
     }
-    .success-mode .banner-title { text-shadow: 0 0 25px rgba(0,240,255,0.6); }
-
-    .failed-mode .banner-badge { color: var(--accent-red); }
-    .failed-mode .banner-title { color: #ff4d4d; text-shadow: 0 0 25px rgba(255,51,68,0.5); }
-
-    /* CARTA 3D ADAPTADA A PC Y MÓVIL */
-    .stage {
-      perspective: 1200px;
-      width: 100%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      margin: 10px 0;
+    .banner-title {
+      font-family: 'Orbitron', sans-serif; font-size: clamp(1.3rem, 4vw, 1.7rem);
+      font-weight: 900; color: #ffffff; text-transform: uppercase; text-shadow: 0 0 25px rgba(0,240,255,0.6);
     }
 
+    .stage { perspective: 1200px; width: 100%; display: flex; justify-content: center; align-items: center; margin: 10px 0; }
     .card-wrapper {
-      width: clamp(220px, 45vh, 270px);
-      aspect-ratio: 1 / 1.55;
-      position: relative;
-      transform-style: preserve-3d;
-      transition: transform 1.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+      width: clamp(220px, 45vh, 270px); aspect-ratio: 1 / 1.55; position: relative;
+      transform-style: preserve-3d; transition: transform 1.2s cubic-bezier(0.34, 1.56, 0.64, 1);
       animation: floatSmooth 4s ease-in-out infinite;
     }
-
     @keyframes floatSmooth {
       0%, 100% { transform: translateY(0px) rotateX(4deg) rotateY(-2deg); }
       50% { transform: translateY(-10px) rotateX(-4deg) rotateY(2deg); }
     }
-
     .card-wrapper.flipped {
       animation: floatFlipped 4s ease-in-out infinite 1.2s !important;
       transform: scale(1.05) rotateY(180deg) !important;
     }
-
     @keyframes floatFlipped {
       0%, 100% { transform: scale(1.05) rotateY(180deg) translateY(0px); }
       50% { transform: scale(1.05) rotateY(184deg) translateY(-8px); }
     }
 
-    .card-wrapper.failed-state {
-      animation: none !important;
-      transform: scale(0.95) rotateX(10deg);
-      filter: grayscale(40%) brightness(0.7);
-      transition: all 0.8s ease;
-    }
-
     .card-face {
-      position: absolute;
-      inset: 0;
-      backface-visibility: hidden;
-      border-radius: var(--radius-ui);
-      overflow: hidden;
-      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8), 0 0 20px rgba(0, 240, 255, 0.15);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      background: var(--card-bg);
+      position: absolute; inset: 0; backface-visibility: hidden; border-radius: var(--radius-ui);
+      overflow: hidden; box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8), 0 0 20px rgba(0, 240, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.15); background: var(--card-bg);
     }
-
-    .card-face img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-    }
-
+    .card-face img { width: 100%; height: 100%; object-fit: cover; display: block; }
     .card-back { transform: rotateY(0deg); }
     .card-front { transform: rotateY(180deg); }
 
-    /* PANEL DE VOTACIÓN PROFESIONAL */
     .vote-ui {
-      width: 100%;
-      background: rgba(13, 17, 26, 0.75);
-      backdrop-filter: blur(15px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: var(--radius-ui);
-      padding: 16px 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      transition: opacity 0.4s ease, transform 0.4s ease;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
-      margin-bottom: 5px;
+      width: 100%; background: rgba(13, 17, 26, 0.75); backdrop-filter: blur(15px);
+      border: 1px solid rgba(255, 255, 255, 0.1); border-radius: var(--radius-ui);
+      padding: 16px 20px; display: flex; flex-direction: column; gap: 10px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.6); margin-bottom: 5px;
+      transition: opacity 0.4s ease;
     }
-
-    .progress-info {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
+    .progress-info { display: flex; flex-direction: column; gap: 6px; }
     .votes-display {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-family: 'Orbitron', sans-serif;
-      font-size: 0.85rem;
-      font-weight: 700;
-      color: #94a3b8;
+      display: flex; justify-content: space-between; align-items: center;
+      font-family: 'Orbitron', sans-serif; font-size: 0.85rem; font-weight: 700; color: #94a3b8;
     }
-
-    .votes-highlight {
-      font-size: 1.2rem;
-      color: var(--accent-cyan);
-      font-weight: 900;
-    }
-
-    .progress-bar-bg {
-      width: 100%;
-      height: 6px;
-      background: rgba(255, 255, 255, 0.08);
-      border-radius: 10px;
-      overflow: hidden;
-    }
-
-    .progress-bar-fill {
-      height: 100%;
-      width: 0%;
-      background: linear-gradient(90deg, var(--accent-cyan), var(--accent-pink));
-      border-radius: 10px;
-      transition: width 0.3s ease;
-    }
+    .votes-highlight { font-size: 1.2rem; color: var(--accent-cyan); font-weight: 900; }
+    .progress-bar-bg { width: 100%; height: 6px; background: rgba(255, 255, 255, 0.08); border-radius: 10px; overflow: hidden; }
+    .progress-bar-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent-cyan), var(--accent-pink)); border-radius: 10px; transition: width 0.3s ease; }
 
     .btn-vote {
-      width: 100%;
-      background: linear-gradient(135deg, #00f0ff 0%, #0072ff 100%);
-      color: #07090e;
-      border: none;
-      font-family: 'Orbitron', sans-serif;
-      font-size: 1rem;
-      font-weight: 900;
-      letter-spacing: 1.5px;
-      padding: 13px;
-      border-radius: 12px;
-      cursor: pointer;
-      text-transform: uppercase;
-      transition: all 0.2s ease;
+      width: 100%; background: linear-gradient(135deg, #00f0ff 0%, #0072ff 100%);
+      color: #07090e; border: none; font-family: 'Orbitron', sans-serif; font-size: 1rem;
+      font-weight: 900; letter-spacing: 1.5px; padding: 13px; border-radius: 12px;
+      cursor: pointer; text-transform: uppercase; transition: all 0.2s ease;
       box-shadow: 0 5px 15px rgba(0, 240, 255, 0.35);
     }
-
     .btn-vote:hover { filter: brightness(1.1); transform: translateY(-1px); }
     .btn-vote:active { transform: scale(0.98); }
+    .btn-vote:disabled { background: #334155; color: #64748b; cursor: not-allowed; box-shadow: none; transform: none; }
 
-    .fade-out {
-      opacity: 0 !important;
-      transform: translateY(15px) !important;
-      pointer-events: none !important;
-    }
-
-    /* BOTONES DE PRUEBA (ESQUINA INFERIOR DERECHA) */
-    .test-box {
-      position: fixed;
-      bottom: 12px;
-      right: 12px;
-      z-index: 100;
-      display: flex;
-      gap: 6px;
-    }
-
-    .btn-test {
-      background: rgba(255, 255, 255, 0.06);
-      border: 1px solid rgba(255, 255, 255, 0.18);
-      color: #94a3b8;
-      padding: 6px 10px;
-      font-size: 0.7rem;
-      border-radius: 8px;
-      cursor: pointer;
-      backdrop-filter: blur(8px);
-      font-family: 'Orbitron', sans-serif;
-      transition: all 0.2s;
-    }
-    .btn-test:hover { background: rgba(255,255,255,0.2); color: #fff; }
+    .fade-out { opacity: 0 !important; pointer-events: none !important; }
   </style>
 </head>
 <body>
@@ -341,39 +158,28 @@
   <div id="flashOverlay" class="flash-overlay"></div>
   <canvas id="burstCanvas"></canvas>
 
-  <!-- BANNER DE ÉXITO -->
-  <div id="successBanner" class="status-banner success-mode">
-    <span class="banner-badge">● LEGADO DESBLOQUEADO ●</span>
-    <h1 class="banner-title">JHODA HA RESPONDIDO</h1>
-  </div>
-
-  <!-- BANNER DE FRACASO -->
-  <div id="failedBanner" class="status-banner failed-mode">
-    <span class="banner-badge">● TIEMPO AGOTADO ●</span>
-    <h1 class="banner-title">NO SE CUMPLIÓ CON LA META</h1>
+  <div id="successBanner" class="status-banner">
+    <span class="banner-badge">● META ALCANZADA (500/500) ●</span>
+    <h1 class="banner-title" id="bannerCreatorName">JHODA HA RESPONDIDO</h1>
   </div>
 
   <div class="app-container">
-    
-    <!-- HEADER -->
-    <header id="headerUI" class="header-ui">
+    <header class="header-ui">
       <span class="tag">BLOOD STRIKE LATAM</span>
-      <div id="timer" class="timer">05:00:00</div>
+      <h2 id="creatorTitle" class="creator-title">CARGANDO...</h2>
     </header>
 
-    <!-- CARTA 3D -->
     <div class="stage">
       <div id="cardWrapper" class="card-wrapper">
         <div class="card-face card-back">
-          <img src="1000013129.png" alt="Card Back">
+          <img id="cardBackImg" src="1000013129.png" alt="Card Back">
         </div>
         <div class="card-face card-front">
-          <img src="1000013137.png" alt="Jhoda Card">
+          <img id="cardFrontImg" src="1000013137.png" alt="Card Front">
         </div>
       </div>
     </div>
 
-    <!-- PANEL DE VOTACIÓN Y BARRA -->
     <div id="voteUI" class="vote-ui">
       <div class="progress-info">
         <div class="votes-display">
@@ -384,120 +190,138 @@
           <div id="progressBar" class="progress-bar-fill"></div>
         </div>
       </div>
-      <button id="btnVote" class="btn-vote" onclick="vote(1)">VOTAR AHORA</button>
+      <button id="btnVote" class="btn-vote" onclick="emitVote()">VOTAR AHORA</button>
     </div>
-
-  </div>
-
-  <!-- BOTONES DE PRUEBA RÁPIDA -->
-  <div class="test-box">
-    <button class="btn-test" onclick="vote(100)">⚡ Éxito (+100)</button>
-    <button class="btn-test" onclick="simulateTimeOut()">⌛ No Meta</button>
   </div>
 
   <script>
-    let votes = 0;
+    // ⚠️ REEMPLAZA CON TUS DATOS REALES DE FIREBASE
+      const firebaseConfig = {
+            apiKey: "AIzaSyAHPsKLBAJCu-N5SVS7mTdVHF-5AAVIGy4",
+  authDomain: "blood-strike-torneo.firebaseapp.com",
+  projectId: "blood-strike-torneo",
+  storageBucket: "blood-strike-torneo.firebasestorage.app",
+  messagingSenderId: "756331439350",
+  appId: "1:756331439350:web:06fbe26b312071d94ef8d7",
+  measurementId: "G-QWJBREPW9S"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
     const targetVotes = 500;
-    let isGameOver = false;
 
-    function vote(amount) {
-      if (isGameOver) return;
+    // Generar o recuperar ID de usuario único por navegador (para evitar doble voto)
+    let userId = localStorage.getItem('bs_user_id');
+    if (!userId) {
+      userId = 'user_' + Math.random().toString(36).substring(2) + Date.now();
+      localStorage.setItem('bs_user_id', userId);
+    }
 
-      votes += amount;
-      if (votes > targetVotes) votes = targetVotes;
+    const docRef = db.collection("creators").doc("current_config");
 
-      document.getElementById('currentVotes').innerText = votes;
-      const progressPercent = (votes / targetVotes) * 100;
-      document.getElementById('progressBar').style.width = progressPercent + '%';
+    // Escuchar cambios en tiempo real desde Firestore
+    docRef.onSnapshot((doc) => {
+      if (doc.exists) {
+        const data = doc.data();
+        
+        document.getElementById('creatorTitle').innerText = data.creatorName || "CREADOR";
+        document.getElementById('bannerCreatorName').innerText = `${data.creatorName || "CREADOR"} HA RESPONDIDO`;
+        document.getElementById('cardFrontImg').src = data.frontImg || "1000013137.png";
+        document.getElementById('cardBackImg').src = data.backImg || "1000013129.png";
 
-      if (votes >= targetVotes) {
-        completeGoal();
+        const currentVotes = data.votes || 0;
+        document.getElementById('currentVotes').innerText = currentVotes;
+        const pct = (currentVotes / targetVotes) * 100;
+        document.getElementById('progressBar').style.width = pct + '%';
+
+        // Validar si el usuario actual ya se encuentra en el arreglo de votantes
+        if (data.voters && data.voters.includes(userId)) {
+          lockButton("¡YA HAS VOTADO!");
+        }
+
+        if (data.completed || currentVotes >= targetVotes) {
+          triggerSuccessVisuals();
+        }
+      }
+    });
+
+    async function emitVote() {
+      const btn = document.getElementById('btnVote');
+      btn.disabled = true;
+
+      try {
+        await db.runTransaction(async (transaction) => {
+          const snapshot = await transaction.get(docRef);
+          if (!snapshot.exists) throw "¡El documento no existe!";
+
+          const data = snapshot.data();
+          const voters = data.voters || [];
+          let votes = data.votes || 0;
+
+          if (voters.includes(userId)) {
+            throw "Ya registraste tu voto anteriormente.";
+          }
+
+          if (votes >= targetVotes) {
+            throw "La meta ya ha sido completada.";
+          }
+
+          voters.push(userId);
+          votes += 1;
+          const completed = votes >= targetVotes;
+
+          transaction.update(docRef, {
+            votes: votes,
+            voters: voters,
+            completed: completed
+          });
+        });
+
+        lockButton("¡YA HAS VOTADO!");
+      } catch (err) {
+        console.error("Error al votar:", err);
+        alert(typeof err === 'string' ? err : "Ocurrió un error al registrar tu voto.");
+        btn.disabled = false;
       }
     }
 
-    function completeGoal() {
-      isGameOver = true;
-      document.getElementById('headerUI').classList.add('fade-out');
-      document.getElementById('voteUI').classList.add('fade-out');
+    function lockButton(text) {
+      const btn = document.getElementById('btnVote');
+      btn.innerText = text;
+      btn.disabled = true;
+    }
 
+    function triggerSuccessVisuals() {
+      document.getElementById('voteUI').classList.add('fade-out');
       const flash = document.getElementById('flashOverlay');
       flash.classList.add('active');
       setTimeout(() => flash.classList.remove('active'), 500);
 
       triggerParticleBurst();
-
       setTimeout(() => {
         document.getElementById('cardWrapper').classList.add('flipped');
       }, 250);
-
       setTimeout(() => {
         document.getElementById('successBanner').classList.add('show');
       }, 600);
     }
 
-    function simulateTimeOut() {
-      if (isGameOver) return;
-      isGameOver = true;
-
-      document.getElementById('headerUI').classList.add('fade-out');
-      document.getElementById('voteUI').classList.add('fade-out');
-
-      document.getElementById('timer').innerText = "00:00:00";
-      document.getElementById('cardWrapper').classList.add('failed-state');
-
-      setTimeout(() => {
-        document.getElementById('failedBanner').classList.add('show');
-      }, 400);
-    }
-
-    let totalSeconds = 5 * 3600;
-    function updateTimer() {
-      if (isGameOver) return;
-      
-      const h = Math.floor(totalSeconds / 3600);
-      const m = Math.floor((totalSeconds % 3600) / 60);
-      const s = totalSeconds % 60;
-      const fmt = (n) => String(n).padStart(2, '0');
-      
-      document.getElementById('timer').innerText = `${fmt(h)}:${fmt(m)}:${fmt(s)}`;
-      
-      if (totalSeconds > 0) {
-        totalSeconds--;
-      } else {
-        if (votes < targetVotes) {
-          simulateTimeOut();
-        }
-      }
-    }
-    setInterval(updateTimer, 1000);
-    updateTimer();
-
+    // Partículas de éxito
     const canvas = document.getElementById('burstCanvas');
     const ctx = canvas.getContext('2d');
     let particles = [];
-
-    function resizeCanvas() {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    }
+    function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
     window.addEventListener('resize', resizeCanvas);
     resizeCanvas();
 
     function triggerParticleBurst() {
-      const cx = canvas.width / 2;
-      const cy = canvas.height / 2;
+      const cx = canvas.width / 2, cy = canvas.height / 2;
       for (let i = 0; i < 60; i++) {
-        const angle = Math.random() * Math.PI * 2;
-        const speed = Math.random() * 7 + 2;
+        const angle = Math.random() * Math.PI * 2, speed = Math.random() * 7 + 2;
         particles.push({
-          x: cx,
-          y: cy,
-          vx: Math.cos(angle) * speed,
-          vy: Math.sin(angle) * speed,
-          radius: Math.random() * 2.5 + 1,
-          color: Math.random() > 0.5 ? '#00f0ff' : '#ff0055',ymers: 1,
-          alpha: 1,
-          decay: Math.random() * 0.02 + 0.015
+          x: cx, y: cy, vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed,
+          radius: Math.random() * 2.5 + 1, color: Math.random() > 0.5 ? '#00f0ff' : '#ff0055',
+          alpha: 1, decay: Math.random() * 0.02 + 0.015
         });
       }
       animateBurst();
@@ -506,28 +330,14 @@
     function animateBurst() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       particles.forEach((p, index) => {
-        p.x += p.vx;
-        p.y += p.vy;
-        p.alpha -= p.decay;
-
+        p.x += p.vx; p.y += p.vy; p.alpha -= p.decay;
         if (p.alpha > 0) {
-          ctx.save();
-          ctx.globalAlpha = p.alpha;
-          ctx.fillStyle = p.color;
-          ctx.beginPath();
-          ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-          ctx.fill();
-          ctx.restore();
-        } else {
-          particles.splice(index, 1);
-        }
+          ctx.save(); ctx.globalAlpha = p.alpha; ctx.fillStyle = p.color;
+          ctx.beginPath(); ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2); ctx.fill(); ctx.restore();
+        } else { particles.splice(index, 1); }
       });
-
-      if (particles.length > 0) {
-        requestAnimationFrame(animateBurst);
-      }
+      if (particles.length > 0) requestAnimationFrame(animateBurst);
     }
   </script>
 </body>
-  </html>
-        
+</html>
