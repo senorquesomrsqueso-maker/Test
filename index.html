@@ -2,22 +2,22 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Blood Strike LATAM - Revelación de Legado</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Blood Strike LATAM - Revelación</title>
   
-  <!-- Fuentes Gamer de Alta Calidad -->
+  <!-- Tipografía Limpia & Gamer Profesional -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800;900&family=Rajdhani:wght@600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Plus+Jakarta+Sans:wght@500;700;800&display=swap" rel="stylesheet">
 
   <style>
     :root {
-      --primary-cyan: #00f2ff;
+      --bg-main: #07090e;
+      --card-bg: #0d111a;
+      --accent-cyan: #00f0ff;
       --accent-pink: #ff0055;
-      --gold-glow: #ffcc00;
-      --bg-dark: #050811;
-      --card-width: 290px;
-      --card-height: 450px;
+      --text-muted: #64748b;
+      --radius-ui: 14px;
     }
 
     * {
@@ -25,160 +25,193 @@
       margin: 0;
       padding: 0;
       user-select: none;
+      -webkit-tap-highlight-color: transparent;
     }
 
     body {
-      background: radial-gradient(circle at center, #0d1527 0%, var(--bg-dark) 100%);
-      color: #fff;
-      font-family: 'Rajdhani', sans-serif;
+      background-color: var(--bg-main);
+      color: #ffffff;
+      font-family: 'Plus Jakarta Sans', sans-serif;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: space-between;
-      padding: 25px 15px;
-      overflow-x: hidden;
+      padding: 20px 16px;
+      overflow: hidden;
       position: relative;
     }
 
-    /* Fondo dinámico con aura neón */
-    body::before {
-      content: '';
+    /* Fondo con cuadrícula ultra limpia estilo cyberpunk minimalista */
+    .bg-grid {
       position: absolute;
-      width: 600px;
-      height: 600px;
-      background: radial-gradient(circle, rgba(0, 242, 255, 0.15) 0%, rgba(255, 0, 85, 0.08) 50%, transparent 70%);
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
+      inset: 0;
+      background-image: 
+        linear-gradient(to right, rgba(255,255,255,0.02) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255,255,255,0.02) 1px, transparent 1px);
+      background-size: 30px 30px;
       pointer-events: none;
-      z-index: 1;
+      z-index: 0;
     }
 
-    /* Canvas para partículas del fondo */
-    #particles-canvas {
-      position: absolute;
-      top: 0;
-      left: 0;
+    /* Destello de fondo al completar */
+    .flash-overlay {
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(circle, rgba(0,240,255,0.4) 0%, transparent 70%);
+      opacity: 0;
+      pointer-events: none;
+      z-index: 50;
+      transition: opacity 0.5s ease;
+    }
+    .flash-overlay.active {
+      opacity: 1;
+    }
+
+    /* Canvas para ráfaga de partículas */
+    #burstCanvas {
+      position: fixed;
+      inset: 0;
       width: 100%;
       height: 100%;
-      z-index: 1;
       pointer-events: none;
+      z-index: 40;
     }
 
-    /* --- MENSAJE DE META CUMPLIDA (SUPERIOR) --- */
-    .meta-message {
-      position: fixed;
-      top: 10%;
-      font-family: 'Orbitron', sans-serif;
-      font-size: 2.2rem;
-      font-weight: 900;
-      color: #fff;
-      text-transform: uppercase;
-      letter-spacing: 3px;
-      text-shadow: 0 0 20px var(--primary-cyan), 0 0 40px var(--accent-pink);
-      opacity: 0;
-      transform: translateY(-30px) scale(0.8);
-      transition: all 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      pointer-events: none;
-      z-index: 30;
+    /* Layout Principal */
+    .app-container {
+      width: 100%;
+      max-width: 420px;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 10;
+      padding: 10px 0;
+    }
+
+    /* --- ENCABEZADO --- */
+    .header-ui {
       text-align: center;
+      transition: opacity 0.5s ease, transform 0.5s ease;
       width: 100%;
     }
 
-    .meta-message.active {
+    .tag {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 3px;
+      color: var(--accent-cyan);
+      text-transform: uppercase;
+      opacity: 0.9;
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .timer {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(1.8rem, 6vw, 2.4rem);
+      font-weight: 900;
+      letter-spacing: 3px;
+      color: #ffffff;
+      background: rgba(13, 17, 26, 0.7);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 8px 20px;
+      border-radius: var(--radius-ui);
+      display: inline-block;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+    }
+
+    /* --- BANNER META CUMPLIDA (Posicionado para móviles sin cortarse) --- */
+    .meta-banner {
+      position: absolute;
+      top: 5%;
+      left: 0;
+      width: 100%;
+      text-align: center;
+      opacity: 0;
+      transform: translateY(-20px) scale(0.95);
+      transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+      pointer-events: none;
+      z-index: 30;
+      padding: 0 15px;
+    }
+
+    .meta-banner.show {
       opacity: 1;
       transform: translateY(0) scale(1);
     }
 
-    /* --- ENCABEZADO CON CRONÓMETRO --- */
-    .header-container {
-      text-align: center;
-      z-index: 10;
-      transition: opacity 0.8s ease, transform 0.8s ease;
-    }
-
-    .subtitle {
+    .meta-badge {
       font-family: 'Orbitron', sans-serif;
-      font-size: 0.95rem;
-      font-weight: 800;
-      letter-spacing: 4px;
-      color: var(--primary-cyan);
-      text-transform: uppercase;
-      margin-bottom: 10px;
-      text-shadow: 0 0 10px rgba(0, 242, 255, 0.5);
-    }
-
-    .countdown-box {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 2.8rem;
+      font-size: 0.7rem;
       font-weight: 900;
-      letter-spacing: 5px;
-      color: #ffffff;
-      background: rgba(10, 16, 30, 0.65);
-      backdrop-filter: blur(12px);
-      padding: 12px 30px;
-      border-radius: 16px;
-      border: 1px solid rgba(0, 242, 255, 0.3);
-      box-shadow: 0 0 30px rgba(0, 242, 255, 0.2), inset 0 0 15px rgba(0, 242, 255, 0.1);
-      display: inline-block;
+      letter-spacing: 2px;
+      background: linear-gradient(90deg, var(--accent-cyan), var(--accent-pink));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+      display: block;
     }
 
-    /* --- MESA Y CARTA 3D --- */
+    .meta-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(1.4rem, 5vw, 2rem);
+      font-weight: 900;
+      color: #ffffff;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      text-shadow: 0 0 20px rgba(0,240,255,0.5);
+    }
+
+    /* --- ESCENA CARTA 3D --- */
     .stage {
-      perspective: 1200px;
-      margin: 15px 0;
-      z-index: 10;
+      perspective: 1000px;
+      width: 100%;
       display: flex;
       justify-content: center;
       align-items: center;
+      margin: auto 0;
     }
 
-    .card-container {
-      width: var(--card-width);
-      height: var(--card-height);
+    .card-wrapper {
+      width: clamp(230px, 62vw, 280px);
+      aspect-ratio: 1 / 1.55;
       position: relative;
       transform-style: preserve-3d;
-      transition: transform 1.6s cubic-bezier(0.2, 0.8, 0.2, 1);
-      animation: floatAnimation 4.5s ease-in-out infinite;
-      cursor: pointer;
+      transition: transform 1.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+      animation: floatSmooth 4s ease-in-out infinite;
     }
 
-    /* Efecto de flotado constante */
-    @keyframes floatAnimation {
-      0%, 100% {
-        transform: translateY(0px) rotateX(8deg) rotateY(-4deg);
-      }
-      50% {
-        transform: translateY(-16px) rotateX(-6deg) rotateY(4deg);
-      }
+    @keyframes floatSmooth {
+      0%, 100% { transform: translateY(0px) rotateX(4deg) rotateY(-2deg); }
+      50% { transform: translateY(-12px) rotateX(-4deg) rotateY(2deg); }
     }
 
-    /* Animación de giro al revelar */
-    .card-container.revealed {
-      animation: floatRevealed 4.5s ease-in-out infinite 1.6s !important;
-      transform: scale(1.12) rotateY(180deg) !important;
+    /* Giro de la carta al completar */
+    .card-wrapper.flipped {
+      animation: floatFlipped 4s ease-in-out infinite 1.2s !important;
+      transform: scale(1.08) rotateY(180deg) !important;
     }
 
-    @keyframes floatRevealed {
-      0%, 100% {
-        transform: scale(1.12) rotateY(180deg) translateY(0px) rotateX(-4deg);
-      }
-      50% {
-        transform: scale(1.12) rotateY(184deg) translateY(-16px) rotateX(4deg);
-      }
+    @keyframes floatFlipped {
+      0%, 100% { transform: scale(1.08) rotateY(180deg) translateY(0px); }
+      50% { transform: scale(1.08) rotateY(184deg) translateY(-10px); }
     }
 
     .card-face {
       position: absolute;
-      width: 100%;
-      height: 100%;
+      inset: 0;
       backface-visibility: hidden;
-      border-radius: 18px;
+      border-radius: 16px;
       overflow: hidden;
-      box-shadow: 0 20px 45px rgba(0, 0, 0, 0.8), 0 0 35px rgba(0, 242, 255, 0.25);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      transition: box-shadow 0.5s ease;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.7), 0 0 20px rgba(0, 240, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: var(--card-bg);
     }
 
     .card-face img {
@@ -188,203 +221,233 @@
       display: block;
     }
 
-    /* Reverso */
     .card-back {
       transform: rotateY(0deg);
     }
 
-    /* Frente (Jhoda) con resplandor dorado y neón */
     .card-front {
       transform: rotateY(180deg);
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9), 0 0 45px rgba(255, 0, 85, 0.5), 0 0 15px rgba(255, 204, 0, 0.4);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.9), 0 0 30px rgba(255, 0, 85, 0.4);
     }
 
-    /* --- SECCIÓN DE VOTACIÓN --- */
-    .vote-section {
-      text-align: center;
-      z-index: 10;
-      transition: opacity 0.8s ease, transform 0.8s ease;
-      background: rgba(10, 16, 30, 0.5);
-      backdrop-filter: blur(10px);
-      padding: 18px 35px;
-      border-radius: 20px;
+    /* --- BOTÓN Y BARRA DE PROGRESO --- */
+    .vote-ui {
+      width: 100%;
+      background: rgba(13, 17, 26, 0.6);
+      backdrop-filter: blur(12px);
       border: 1px solid rgba(255, 255, 255, 0.08);
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      border-radius: 20px;
+      padding: 18px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      transition: opacity 0.5s ease, transform 0.5s ease;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
     }
 
-    .vote-count {
+    .progress-info {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .votes-display {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       font-family: 'Orbitron', sans-serif;
-      font-size: 1.6rem;
-      font-weight: 800;
-      letter-spacing: 3px;
-      margin-bottom: 12px;
-      color: #e0e6ed;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #94a3b8;
     }
 
-    .vote-count span {
-      color: var(--primary-cyan);
-      text-shadow: 0 0 12px rgba(0, 242, 255, 0.6);
+    .votes-highlight {
+      font-size: 1.2rem;
+      color: var(--accent-cyan);
+      font-weight: 900;
     }
 
+    /* Barra de progreso limpia */
+    .progress-bar-bg {
+      width: 100%;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--accent-cyan), var(--accent-pink));
+      border-radius: 10px;
+      transition: width 0.4s ease;
+    }
+
+    /* Botón de Votar elegante */
     .btn-vote {
-      background: linear-gradient(135deg, var(--accent-pink) 0%, #ff5500 100%);
-      color: #fff;
+      width: 100%;
+      background: linear-gradient(135deg, #00f0ff 0%, #0072ff 100%);
+      color: #07090e;
       border: none;
       font-family: 'Orbitron', sans-serif;
-      padding: 14px 45px;
-      font-size: 1.25rem;
+      font-size: 1rem;
       font-weight: 900;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      border-radius: 50px;
+      letter-spacing: 1.5px;
+      padding: 14px;
+      border-radius: 12px;
       cursor: pointer;
-      box-shadow: 0 0 25px rgba(255, 0, 85, 0.5);
-      transition: all 0.3s ease;
-    }
-
-    .btn-vote:hover {
-      transform: translateY(-3px) scale(1.05);
-      box-shadow: 0 0 35px rgba(255, 0, 85, 0.8);
+      text-transform: uppercase;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 15px rgba(0, 240, 255, 0.3);
     }
 
     .btn-vote:active {
-      transform: translateY(1px) scale(0.97);
+      transform: scale(0.98);
+      box-shadow: 0 2px 8px rgba(0, 240, 255, 0.2);
     }
 
-    /* Botón flotante chiquito de pruebas en la esquina inferior */
-    .btn-test {
-      position: fixed;
-      bottom: 15px;
-      right: 15px;
-      z-index: 100;
-      background: rgba(0, 242, 255, 0.1);
-      border: 1px solid rgba(0, 242, 255, 0.4);
-      color: var(--primary-cyan);
-      padding: 6px 14px;
-      border-radius: 20px;
-      font-size: 0.8rem;
-      font-family: 'Rajdhani', sans-serif;
-      font-weight: 700;
-      cursor: pointer;
-      backdrop-filter: blur(5px);
-      transition: all 0.3s ease;
-    }
-
-    .btn-test:hover {
-      background: var(--primary-cyan);
-      color: var(--bg-dark);
-      box-shadow: 0 0 15px rgba(0, 242, 255, 0.6);
-    }
-
-    /* Ocultar elementos al cumplir la meta */
+    /* Ocultar interfaz al completar */
     .fade-out {
       opacity: 0 !important;
+      transform: translateY(20px) !important;
       pointer-events: none !important;
-      transform: translateY(25px);
+    }
+
+    /* Botón de prueba en esquina */
+    .btn-test {
+      position: fixed;
+      bottom: 12px;
+      right: 12px;
+      z-index: 100;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #94a3b8;
+      padding: 5px 10px;
+      font-size: 0.75rem;
+      border-radius: 8px;
+      cursor: pointer;
+      backdrop-filter: blur(5px);
     }
   </style>
 </head>
 <body>
 
-  <canvas id="particles-canvas"></canvas>
+  <div class="bg-grid"></div>
+  <div id="flashOverlay" class="flash-overlay"></div>
+  <canvas id="burstCanvas"></canvas>
 
-  <!-- MENSAJE DE CELEBRACIÓN -->
-  <div id="meta-message" class="meta-message">¡META CUMPLIDA!</div>
-
-  <!-- ENCABEZADO CON CRONÓMETRO -->
-  <div id="header-ui" class="header-container">
-    <div class="subtitle">BLOOD STRIKE LATAM • REVELACIÓN DE LEGADO</div>
-    <div id="timer" class="countdown-box">05:00:00</div>
+  <!-- BANNER META CUMPLIDA -->
+  <div id="metaBanner" class="meta-banner">
+    <span class="meta-badge">● LEGADO DESBLOQUEADO ●</span>
+    <h1 class="meta-title">JHODA HA RESPONDIDO</h1>
   </div>
 
-  <!-- ZONA DE LA CARTA 3D -->
-  <div class="stage">
-    <div id="card" class="card-container">
-      <!-- Reverso (Carta azul) -->
-      <div class="card-face card-back">
-        <img src="1000013129.png" alt="Carta Bloqueada">
-      </div>
-      <!-- Frente (Jhoda) -->
-      <div class="card-face card-front">
-        <img src="1000013137.png" alt="Jhoda Revelado">
+  <div class="app-container">
+    
+    <!-- HEADER -->
+    <header id="headerUI" class="header-ui">
+      <span class="tag">BLOOD STRIKE LATAM</span>
+      <div id="timer" class="timer">05:00:00</div>
+    </header>
+
+    <!-- MESA / CARTA 3D -->
+    <div class="stage">
+      <div id="cardWrapper" class="card-wrapper">
+        <!-- Reverso (Carta azul) -->
+        <div class="card-face card-back">
+          <img src="1000013129.png" alt="Card Back">
+        </div>
+        <!-- Frente (Jhoda) -->
+        <div class="card-face card-front">
+          <img src="1000013137.png" alt="Jhoda Card">
+        </div>
       </div>
     </div>
-  </div>
 
-  <!-- PANEL DE VOTACIÓN -->
-  <div id="vote-ui" class="vote-section">
-    <div class="vote-count">
-      <span id="current-votes">0</span> / 500 VOTOS
+    <!-- PANEL DE VOTACIÓN Y BARRA -->
+    <div id="voteUI" class="vote-ui">
+      <div class="progress-info">
+        <div class="votes-display">
+          <span>META DE COMUNIDAD</span>
+          <span><strong id="currentVotes" class="votes-highlight">0</strong> / 500</span>
+        </div>
+        <div class="progress-bar-bg">
+          <div id="progressBar" class="progress-bar-fill"></div>
+        </div>
+      </div>
+      <button id="btnVote" class="btn-vote" onclick="vote(1)">VOTAR AHORA</button>
     </div>
-    <button id="btn-vote" class="btn-vote" onclick="addVote(1)">VOTAR AHORA</button>
+
   </div>
 
-  <!-- BOTÓN CHIQUITO DE PRUEBAS -->
-  <button class="btn-test" onclick="addVote(100)">⚡ Test (+100)</button>
+  <!-- BOTÓN DE PRUEBA -->
+  <button class="btn-test" onclick="vote(100)">⚡ Test +100</button>
 
   <script>
     let votes = 0;
     const targetVotes = 500;
-    let isRevealed = false;
+    let isCompleted = false;
 
-    // --- 1. LÓGICA DE VOTACIÓN ---
-    function addVote(count) {
-      if (isRevealed) return;
+    function vote(amount) {
+      if (isCompleted) return;
 
-      votes += count;
+      votes += amount;
       if (votes > targetVotes) votes = targetVotes;
 
-      document.getElementById('current-votes').innerText = votes;
+      // Actualizar UI de votos
+      document.getElementById('currentVotes').innerText = votes;
+      const progressPercent = (votes / targetVotes) * 100;
+      document.getElementById('progressBar').style.width = progressPercent + '%';
 
       if (votes >= targetVotes) {
-        triggerReveal();
+        completeGoal();
       }
     }
 
-    // --- 2. ANIMACIÓN DE REVELACIÓN ÉPICA ---
-    function triggerReveal() {
-      isRevealed = true;
+    function completeGoal() {
+      isCompleted = true;
 
-      // Ocultar suavemente el título, reloj y el botón de votar
-      document.getElementById('header-ui').classList.add('fade-out');
-      document.getElementById('vote-ui').classList.add('fade-out');
+      // 1. Ocultar suavemente header y panel de votos
+      document.getElementById('headerUI').classList.add('fade-out');
+      document.getElementById('voteUI').classList.add('fade-out');
 
-      // Mostrar el texto gigante "¡META CUMPLIDA!"
+      // 2. Destello visual (Flash shockwave)
+      const flash = document.getElementById('flashOverlay');
+      flash.classList.add('active');
+      setTimeout(() => flash.classList.remove('active'), 600);
+
+      // 3. Ráfaga de partículas de luz
+      triggerParticleBurst();
+
+      // 4. Girar carta en 3D
       setTimeout(() => {
-        document.getElementById('meta-message').classList.add('active');
-      }, 400);
+        document.getElementById('cardWrapper').classList.add('flipped');
+      }, 300);
 
-      // Girar la carta en 180 grados con física 3D
+      // 5. Mostrar banner superior bien posicionado
       setTimeout(() => {
-        const card = document.getElementById('card');
-        card.classList.add('revealed');
-      }, 1000);
+        document.getElementById('metaBanner').classList.add('show');
+      }, 700);
     }
 
-    // --- 3. CONTADOR DE SUSPENSO DE 5 HORAS ---
+    // --- CRONÓMETRO ---
     let totalSeconds = 5 * 3600;
-
     function updateTimer() {
-      const hours = Math.floor(totalSeconds / 3600);
-      const minutes = Math.floor((totalSeconds % 3600) / 60);
-      const seconds = totalSeconds % 60;
-
-      const format = (num) => String(num).padStart(2, '0');
-
-      document.getElementById('timer').innerText = 
-        `${format(hours)}:${format(minutes)}:${format(seconds)}`;
-
-      if (totalSeconds > 0) {
-        totalSeconds--;
-      }
+      const h = Math.floor(totalSeconds / 3600);
+      const m = Math.floor((totalSeconds % 3600) / 60);
+      const s = totalSeconds % 60;
+      const fmt = (n) => String(n).padStart(2, '0');
+      document.getElementById('timer').innerText = `${fmt(h)}:${fmt(m)}:${fmt(s)}`;
+      if (totalSeconds > 0) totalSeconds--;
     }
-
     setInterval(updateTimer, 1000);
     updateTimer();
 
-    // --- 4. EFECTO DE PARTÍCULAS EN EL FONDO (CANVAS) ---
-    const canvas = document.getElementById('particles-canvas');
+    // --- EFECTO DE RÁFAGA DE PARTÍCULAS ---
+    const canvas = document.getElementById('burstCanvas');
     const ctx = canvas.getContext('2d');
+    let particles = [];
 
     function resizeCanvas() {
       canvas.width = window.innerWidth;
@@ -393,39 +456,50 @@
     window.addEventListener('resize', resizeCanvas);
     resizeCanvas();
 
-    const particles = [];
-    for (let i = 0; i < 45; i++) {
-      particles.push({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height,
-        radius: Math.random() * 2 + 0.5,
-        color: Math.random() > 0.5 ? '#00f2ff' : '#ff0055',
-        speedX: (Math.random() - 0.5) * 0.6,
-        speedY: (Math.random() - 0.5) * 0.6,
-        alpha: Math.random() * 0.6 + 0.2
-      });
+    function triggerParticleBurst() {
+      const cx = canvas.width / 2;
+      const cy = canvas.height / 2;
+      for (let i = 0; i < 70; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const speed = Math.random() * 8 + 2;
+        particles.push({
+          x: cx,
+          y: cy,
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed,
+          radius: Math.random() * 3 + 1,
+          color: Math.random() > 0.5 ? '#00f0ff' : '#ff0055',
+          alpha: 1,
+          decay: Math.random() * 0.02 + 0.015
+        });
+      }
+      animateBurst();
     }
 
-    function animateParticles() {
+    function animateBurst() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      particles.forEach(p => {
-        p.x += p.speedX;
-        p.y += p.speedY;
+      particles.forEach((p, index) => {
+        p.x += p.vx;
+        p.y += p.vy;
+        p.alpha -= p.decay;
 
-        if (p.x < 0 || p.x > canvas.width) p.speedX *= -1;
-        if (p.y < 0 || p.y > canvas.height) p.speedY *= -1;
-
-        ctx.save();
-        ctx.globalAlpha = p.alpha;
-        ctx.fillStyle = p.color;
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.restore();
+        if (p.alpha > 0) {
+          ctx.save();
+          ctx.globalAlpha = p.alpha;
+          ctx.fillStyle = p.color;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.restore();
+        } else {
+          particles.splice(index, 1);
+        }
       });
-      requestAnimationFrame(animateParticles);
+
+      if (particles.length > 0) {
+        requestAnimationFrame(animateBurst);
+      }
     }
-    animateParticles();
   </script>
 </body>
 </html>
